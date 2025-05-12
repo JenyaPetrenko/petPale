@@ -2,14 +2,26 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
+import Modal from "@/components/Modal";
+import PetOwnerForm from "@/components/PetOwnerForm";
+import PetTakerForm from "@/components/PetTakerForm";
 import Button from "@/components/Button";
 
 export default function Products() {
-  const router = useRouter();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeForm, setActiveForm] = useState<"owner" | "caretaker" | null>(
+    null
+  );
 
-  const handleJoinClick = (type: "owner" | "caretaker") => {
-    router.push(`/joinForm?type=${type}`); // Pass the type as a query parameter
+  const handleOpenModal = (type: "owner" | "caretaker") => {
+    setActiveForm(type);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setActiveForm(null);
+    setIsModalOpen(false);
   };
 
   return (
@@ -23,7 +35,6 @@ export default function Products() {
               width={50}
               height={50}
             />
-            {/* Navbar logic */}
           </div>
           <div id="navbar-links" className="display">
             <Link id="link_home" href="/">
@@ -69,7 +80,7 @@ export default function Products() {
                 Find a trusted person to care for your pet.
               </p>
               <Button
-                onClick={() => handleJoinClick("owner")}
+                onClick={() => handleOpenModal("owner")}
                 className="productCard__btn"
               >
                 Join
@@ -90,7 +101,7 @@ export default function Products() {
                 Help others by spending time with pets.
               </p>
               <Button
-                onClick={() => handleJoinClick("caretaker")}
+                onClick={() => handleOpenModal("caretaker")}
                 className="productCard__btn"
               >
                 Join
@@ -101,6 +112,12 @@ export default function Products() {
       </main>
 
       <footer className="footer">{/* Footer content */}</footer>
+
+      {/* Modal for forms */}
+      <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+        {activeForm === "owner" && <PetOwnerForm />}
+        {activeForm === "caretaker" && <PetTakerForm />}
+      </Modal>
     </div>
   );
 }

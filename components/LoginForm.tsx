@@ -1,34 +1,67 @@
+"use client";
+
 import React, { useState } from "react";
+import Button from "./Button"; // Переконайтеся, що цей компонент існує
+import { LoginForm as LoginFormType } from "@/utils/forms"; // Імпорт типу LoginForm
 
-import Button from "@/components/Button";
-
-interface LoginFormProps {
+type LoginFormProps = {
   onSuccess: () => void;
-}
+};
 
-const roles: { value: "owner" | "caretaker"; label: string }[] = [
-  { value: "owner", label: "Owner" },
-  { value: "caretaker", label: "Caretaker" },
-];
+type RoleOption = {
+  value: string;
+  label: string;
+};
 
-const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState<"owner" | "caretaker" | null>(null);
+export default function LoginForm({ onSuccess }: LoginFormProps) {
+  const [formData, setFormData] = useState<LoginFormType>({
+    email: "",
+    password: "",
+  });
+  const [selectedRole, setSelectedRole] = useState<string | null>(null);
+  const [selectedOptions, setSelectedOptions] = useState<string[]>([]); // Для чекбоксів
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!role) {
-      setError("Please select a role");
-      return;
-    }
+  const roles: RoleOption[] = [
+    { value: "owner", label: "Pet Owner" },
+    { value: "taker", label: "Pet Caretaker" },
+  ];
+
+  const options: RoleOption[] = [
+    { value: "newsletter", label: "Subscribe to newsletter" },
+    { value: "updates", label: "Get updates about events" },
+  ];
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleRoleChange = (value: string) => {
+    setSelectedRole(value);
+  };
+
+  const handleCheckboxChange = (value: string) => {
+    setSelectedOptions(
+      (prev) =>
+        prev.includes(value)
+          ? prev.filter((option) => option !== value) // Видалити, якщо вже вибрано
+          : [...prev, value] // Додати, якщо ще не вибрано
+    );
+  };
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     try {
-      console.log("Logging in as:", { email, password, role });
-      onSuccess();
-    } catch (err) {
-      console.error(err);
-      setError("Invalid credentials");
+      console.log("Form Data:", formData);
+      console.log("Selected Role:", selectedRole);
+      console.log("Selected Options:", selectedOptions);
+      onSuccess(); // Виклик функції після успішного логіну
+    } catch {
+      setError("Login failed. Please try again.");
     }
   };
 
@@ -39,37 +72,53 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
       </h2>
       {error && <p className="text-red-500 text-sm text-center">{error}</p>}
       <input
-        type="text"
-        placeholder="Name"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="w-full border border-gray-300 p-2 rounded-md text-sm"
-      />
-      <input
         type="email"
+        name="email"
         placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        value={formData.email}
+        onChange={handleChange}
         className="w-full border border-gray-300 p-2 rounded-md text-sm"
+        required
       />
       <input
         type="password"
+        name="password"
         placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
+        value={formData.password}
+        onChange={handleChange}
         className="w-full border border-gray-300 p-2 rounded-md text-sm"
+        required
       />
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col gap-2">
+        <h3 className="text-sm font-medium text-gray-700">Select Role</h3>
         {roles.map((roleOption) => (
           <label key={roleOption.value} className="flex items-center gap-2">
             <input
               type="radio"
               name="role"
               value={roleOption.value}
-              onChange={() => setRole(roleOption.value)}
+              onChange={() => handleRoleChange(roleOption.value)}
               className="w-4 h-4"
             />
             {roleOption.label}
+          </label>
+        ))}
+      </div>
+      <div className="flex flex-col gap-2">
+        <h3 className="text-sm font-medium text-gray-700">
+          Additional Options
+        </h3>
+        {options.map((option) => (
+          <label key={option.value} className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              name="options"
+              value={option.value}
+              checked={selectedOptions.includes(option.value)}
+              onChange={() => handleCheckboxChange(option.value)}
+              className="w-4 h-4"
+            />
+            {option.label}
           </label>
         ))}
       </div>
@@ -82,6 +131,4 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
       </p>
     </form>
   );
-};
-
-export default LoginForm;
+}
