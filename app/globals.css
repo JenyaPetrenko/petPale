@@ -1,26 +1,729 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: transparent;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+nav #navbar {
+  height: 2rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+nav #navbar > span {
+  height: 100%; /* Робимо контейнер зображення повної висоти */
+  display: flex;
+  align-items: center;
+}
+
+nav #navbar img {
+  object-fit: contain; /* Пропорційне масштабування зображення */
+  height: 35px; /* Висота зображення */
+  width: 35px; /* Масштабуємо зображення в межах контейнера */
+  width: auto; /* Зберігаємо пропорції */
+}
+nav #navbar img:hover {
+  cursor: pointer;
+}
+
+#navbar-links {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: slide-in-top 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+#navbar-links a {
+  margin: 0.5rem;
+  color: black;
+  text-decoration: none;
+}
+
+#navbar-links a:active {
+  color: black;
+}
+
+#navbar-links a:hover {
+  text-decoration: underline;
+}
+
+.display {
+  display: none !important;
+}
+
+.scrollLock {
+  overflow: hidden;
+}
+
+.bgWhite {
+  background-color: white;
+}
+
+@keyframes slide-in-top {
+  0% {
+    transform: translateY(-1000px);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(0);
+    opacity: 1;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@media (min-width: 768px) {
+  #navbar {
+    display: flex;
+    flex-direction: row;
+  }
+
+  #navbar #hamburger {
+    display: none;
+  }
+
+  #navbar-links {
+    position: fixed;
+    display: block !important;
+    top: 1rem;
+    width: 30rem;
+    right: 1rem;
+    text-align: right;
+    padding: 0.5rem;
+    height: 2rem;
+    background-color: transparent;
+    display: inline-block;
+    animation: none;
+    padding: 0;
+  }
 }
+
+.footer {
+  width: 100%;
+  background-color: #f2efc7;
+}
+
+.footer .address {
+  padding-top: 10px;
+  display: flex;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+}
+
+.footer .address img {
+  margin-left: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.footer .line {
+  border: 1px solid #ccc;
+}
+
+.footer .footer-container {
+  display: flex;
+  flex-direction: column;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.footer .footer-container .footer-links {
+  display: flex;
+  flex-direction: row;
+}
+
+.footer .footer-container .footer-links img {
+  width: 30px;
+  height: 30px;
+}
+
+.footer .footer-container .footer-links a {
+  text-decoration: none;
+  color: black;
+  margin: 5px;
+  font-size: 15px;
+}
+
+.footer .footer-container .CopyAndSocial {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.footer .footer-container .CopyAndSocial .footer-social a {
+  text-decoration: none;
+  color: black;
+  font-size: 25px;
+  display: inline;
+}
+
+@media (min-width: 1024px) {
+  .footer .footer-container {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+}
+
+.index {
+  margin: 0;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  background: url("/assets/img/topImage-1.jpg") no-repeat center center; /* Центруємо фон */
+  background-size: cover; /* Масштабування для покриття всього блоку */
+  width: 100%; /* Займає всю ширину */
+  height: 100vh; /* Займає всю висоту вікна */
+  padding-top: 6rem; /* Додаємо відступ зверху, щоб навбар виглядав нижче */
+}
+
+.index .wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Зміщуємо контент ближче до верху */
+  align-items: center; /* Центруємо контент по горизонталі */
+  height: calc(
+    100% - 6rem
+  ); /* Враховуємо відступ, щоб контент займав решту простору */
+  margin: 0;
+  padding: 2rem; /* Збільшуємо поля сторінки */
+}
+
+.index .wrapper main {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 4rem; /* Робимо текст трохи вище, щоб він не був занадто низько */
+}
+
+.index .wrapper main h2 {
+  font-family: arial;
+  font-size: 2rem;
+  margin: 0;
+}
+
+.index .wrapper main p {
+  width: 70%;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  text-align: center;
+  font-size: 1rem;
+  margin-top: 1rem; /* Додаємо трохи відступу між текстом */
+}
+
+.index .wrapper main .CTA {
+  padding: 0.5rem;
+  background-color: #426a5a;
+  color: white;
+  min-width: 150px;
+  border-radius: 110px;
+  border: solid 2px transparent;
+  margin: 20px;
+  font-family: arial;
+  font-size: 1rem;
+}
+
+.index .wrapper main button:hover {
+  cursor: pointer;
+  border: solid 2px darkorange;
+  transition-duration: 300ms;
+}
+
+.index .wrapper .footer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+}
+
+@media (min-width: 1024px) {
+  .index .wrapper main {
+    position: relative;
+    top: 10vh;
+  }
+
+  .index .wrapper main h2 {
+    font-size: 3rem;
+  }
+
+  .index .wrapper main p {
+    font-size: 1.4rem;
+  }
+
+  .index .wrapper main .CTA {
+    width: 200px;
+    height: 50px;
+    font-size: 1.2rem;
+  }
+}
+
+.index #link_home {
+  color: darkorange;
+}
+
+.kontakt {
+  margin: 0;
+  margin-top: 4rem;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  /* DESKTOP*/
+}
+
+.kontakt .wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 30px;
+  gap: 10px;
+}
+
+.kontakt .wrapper .images {
+  display: flex;
+  flex-direction: column;
+}
+
+.kontakt .wrapper .images img {
+  border-radius: 5px;
+  width: 80vw;
+}
+
+.kontakt .wrapper .images .display-none-mobile {
+  display: none;
+}
+
+.kontakt .wrapper .form {
+  width: 80vw;
+  background: lightgray;
+  text-align: center;
+  font-size: 1rem;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.kontakt .wrapper .form .contacts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.kontakt .wrapper .form .contacts input {
+  border-radius: 5px;
+  width: 60vw;
+  border: 1px solid black;
+  background-color: white;
+}
+
+.kontakt .wrapper .form .account-type {
+  width: 60vw;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.kontakt .wrapper .form .topic {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.kontakt .wrapper .form .topic select {
+  width: 60vw;
+  border-radius: 5px;
+  border: 1px solid black;
+  background-color: white;
+}
+
+.kontakt .wrapper .form textarea {
+  border-radius: 5px;
+  width: 60vw;
+  border: 1px solid black;
+  background-color: white;
+}
+
+.kontakt .wrapper .form button {
+  padding: 0.5rem;
+  background-color: #426a5a !important;
+  color: white;
+  border: none;
+  min-width: 80px !important;
+  border-radius: 110px;
+  border: solid 2px transparent;
+  margin: 20px;
+}
+
+.kontakt .wrapper .form button:hover {
+  cursor: pointer;
+  border: solid 2px darkorange;
+  transition-duration: 300ms;
+}
+
+@media (min-width: 1024px) {
+  .kontakt .wrapper {
+    min-height: 75vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .kontakt .wrapper .images {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .kontakt .wrapper .images .display-none-mobile {
+    display: block;
+    font-size: 4rem;
+    font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
+      sans-serif;
+  }
+
+  .kontakt .wrapper .images .display-none-mobile img {
+    width: auto;
+    height: 650px;
+  }
+
+  .kontakt .wrapper .images .display-none-desktop {
+    display: none;
+  }
+
+  .kontakt .wrapper .form {
+    width: 40vw;
+    height: 650px;
+    display: flex;
+    flex-direction: column;
+    align-items: space-around;
+    justify-content: space-around;
+  }
+
+  .kontakt .wrapper .form .contacts {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .kontakt .wrapper .form .contacts input {
+    width: 30vw;
+  }
+
+  .kontakt .wrapper .form .topic select {
+    width: 30vw;
+  }
+
+  .kontakt .wrapper .form textarea {
+    border-radius: 5px;
+    width: 30vw;
+    min-height: 30px;
+  }
+
+  .kontakt .wrapper .form button {
+    margin: 10;
+  }
+}
+
+.kontakt #link_kontakt {
+  color: darkorange;
+}
+
+/*Om oss*/
+.omoss {
+  margin: 0;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+}
+
+.omoss .hero {
+  width: 80%;
+  border-radius: 5px;
+}
+
+.omoss main {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-top: 4rem;
+}
+
+.omoss h2 {
+  text-align: center;
+  font-family: arial;
+}
+
+.omoss .timeline {
+  width: 80%;
+  max-width: 940px;
+  margin: 28px auto;
+}
+
+.omoss .timeline-list {
+  padding: 40px 0;
+}
+
+.omoss .timeline-list-item {
+  display: flex;
+  line-height: 1.5;
+  font-size: 16px;
+}
+
+.omoss .timeline-list-item .date {
+  width: 20%;
+  padding: 0 0 0 20px;
+  color: black;
+  font-weight: bold;
+}
+
+.omoss .timeline-list-item .content {
+  z-index: -1;
+  position: relative;
+  width: 80%;
+  padding: 0 20px 60px 30px;
+  border-left: 1px solid #aaaaaa;
+}
+
+.omoss .timeline-list-item .content::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -5px;
+  width: 10px;
+  height: 10px;
+  background-color: #426a5a;
+  border-radius: 10px;
+}
+
+.omoss .container {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.omoss .container .member {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 5vh;
+}
+
+.omoss .container .member .TitleEmail {
+  display: flex;
+  justify-content: space-between;
+  color: #888888;
+}
+
+.omoss .container .member .portrait {
+  width: 40vh;
+  height: 40vh;
+  border-radius: 50%;
+}
+
+@media (min-width: 1024px) {
+  .omoss .members {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .omoss .members .member {
+    width: 25%;
+    justify-content: flex-start;
+  }
+
+  .omoss .members .member .portrait {
+    width: 20vw;
+    height: 20vw;
+    border-radius: 50%;
+  }
+}
+
+.omoss #link_about {
+  color: darkorange;
+}
+
+#produkterBODY {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+}
+
+#produkterBODY main {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+#produkterBODY #produkter {
+  margin-top: 4rem;
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+#produkterBODY #produkter img {
+  width: 100%;
+  max-width: 750px;
+}
+
+#produkterBODY #produkter h1 {
+  text-align: center;
+  margin-bottom: 0.5rem;
+  font-size: 2rem;
+}
+
+#produkterBODY #produkter .container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#produkterBODY #produkter .container .productCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  max-width: 280px;
+  margin-bottom: 2rem;
+}
+
+#produkterBODY #produkter .container .productCard h2 {
+  margin: 0;
+}
+
+#produkterBODY #produkter .container .productCard p {
+  text-align: center;
+  margin: 0;
+  margin-bottom: 1rem;
+}
+
+#produkterBODY #produkter .container .productCard button {
+  padding: 0.5rem;
+  background-color: #426a5a;
+  color: white;
+  border: none;
+  min-width: 80px;
+  border-radius: 110px;
+  border: solid 2px transparent;
+}
+
+#produkterBODY #produkter .container .productCard button:hover {
+  cursor: pointer;
+  border: solid 2px darkorange;
+  transition-duration: 300ms;
+}
+
+#produkterBODY #link_product {
+  color: darkorange;
+}
+
+#referenserBODY {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  margin-top: 4rem;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+}
+
+#referenserBODY h1 {
+  text-align: center;
+  font-size: 2rem;
+}
+
+#referenserBODY #reviewCards {
+  margin-top: 2rem;
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#referenserBODY #reviewCards .reviewCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 200px;
+  height: 400px;
+  margin-bottom: 4rem;
+  margin-top: 2rem;
+}
+
+#referenserBODY #reviewCards .reviewCard img {
+  border-radius: 50%;
+  width: 150px;
+  height: 150px;
+}
+
+#referenserBODY #reviewCards .reviewCard h2 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  margin-top: 1rem;
+}
+
+#referenserBODY #reviewCards .reviewCard .container {
+  background-color: #db5c5c;
+  border-radius: 0.5rem;
+}
+
+#referenserBODY #reviewCards .reviewCard .container .container {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+  padding-bottom: 0;
+}
+
+.container svg {
+  color: yellow;
+}
+
+#referenserBODY #reviewCards .reviewCard .container p {
+  padding: 0 1rem;
+  text-align: center;
+  height: 100px;
+}
+
+@media (min-width: 768px) {
+  #referenserBODY main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+  }
+
+  #referenserBODY main #reviewCards {
+    margin-top: 0;
+    min-height: 0;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  #referenserBODY main #reviewCards .reviewCard {
+    margin: 2rem;
+  }
+}
+
+#referenserBODY #link_review {
+  color: darkorange;
+}
+
+/*# sourceMappingURL=style.css.map */
