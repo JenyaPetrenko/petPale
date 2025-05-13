@@ -1,7 +1,11 @@
+import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function Navbar() {
+  //logout and my page links
+  const { data: session } = useSession();
+
   return (
     <nav>
       <div id="navbar">
@@ -12,6 +16,18 @@ export default function Navbar() {
           <Link href="/products">Products</Link>
           <Link href="/reviews">Reviews</Link>
           <Link href="/kontakt">Contact</Link>
+
+          {/* logout and my page links for logged in users */}
+          {session?.user && (
+            <>
+              <Link href="/profile" className="text-green-900">
+                My Page
+              </Link>
+              <button onClick={() => signOut()} className="hover: underline">
+                Logout
+              </button>
+            </>
+          )}
         </div>
       </div>
     </nav>

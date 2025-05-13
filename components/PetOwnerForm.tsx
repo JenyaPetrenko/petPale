@@ -6,6 +6,7 @@ import Button from "@/components/Button";
 interface State {
   name: string;
   email: string;
+  password: string;
   phone: string;
   petType: string;
   petName: string;
@@ -26,6 +27,7 @@ type Action =
 const initialState: State = {
   name: "",
   email: "",
+  password: "",
   phone: "",
   petType: "",
   petName: "",
@@ -78,12 +80,39 @@ const PetOwnerForm: React.FC = () => {
     }
   };
 
-  // Обробник надсилання форми
-  const handleSubmit = (e: React.FormEvent) => {
+  // components/PetOwnerForm.tsx
+
+  // components/PetOwnerForm.tsx
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Owner Form Data:", state);
-    setSuccessMessage("You are registered as Pet Owner!"); // Показуємо повідомлення
-    dispatch({ type: "reset" }); // Очищаємо форму
+
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: state.name,
+        email: state.email,
+        password: state.password,
+        role: "owner",
+        location: state.location,
+        petType: state.petType,
+        petName: state.petName,
+        petAge: state.petAge,
+        petBreed: state.petBreed,
+        petGender: state.petGender,
+        petImage: state.petImage,
+        availability: state.availability,
+      }),
+    });
+
+    if (!res.ok) {
+      console.error("Failed to register");
+      return;
+    }
+
+    setSuccessMessage("You are registered as Pet Owner!");
+    dispatch({ type: "reset" });
   };
 
   return (
@@ -117,6 +146,15 @@ const PetOwnerForm: React.FC = () => {
           placeholder="Email"
           className="w-full border border-gray-300 p-2 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-green-500"
         />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={state.password}
+          onChange={handleChange}
+          className="w-full border border-gray-300 p-2 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-green-500"
+        />
+
         <input
           type="tel"
           name="phone"

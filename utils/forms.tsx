@@ -3,6 +3,7 @@
 export interface OwnerForm {
   name: string;
   email: string;
+  password: string;
   phone: string;
   petType: string;
   petName: string;

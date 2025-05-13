@@ -1,8 +1,10 @@
 "use client";
 
+import { signIn } from "next-auth/react";
 import React, { useState } from "react";
-import Button from "./Button"; // Переконайтеся, що цей компонент існує
-import { LoginForm as LoginFormType } from "@/utils/forms"; // Імпорт типу LoginForm
+
+import Button from "../Button";
+import { LoginForm as LoginFormType } from "@/utils/forms";
 
 type LoginFormProps = {
   onSuccess: () => void;
@@ -18,8 +20,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
     email: "",
     password: "",
   });
-  const [selectedRole, setSelectedRole] = useState<string | null>(null);
-  const [selectedOptions, setSelectedOptions] = useState<string[]>([]); // Для чекбоксів
+  const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const roles: RoleOption[] = [
@@ -40,28 +41,26 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
     }));
   };
 
-  const handleRoleChange = (value: string) => {
-    setSelectedRole(value);
-  };
-
   const handleCheckboxChange = (value: string) => {
-    setSelectedOptions(
-      (prev) =>
-        prev.includes(value)
-          ? prev.filter((option) => option !== value) // Видалити, якщо вже вибрано
-          : [...prev, value] // Додати, якщо ще не вибрано
+    setSelectedOptions((prev) =>
+      prev.includes(value)
+        ? prev.filter((option) => option !== value)
+        : [...prev, value]
     );
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    try {
-      console.log("Form Data:", formData);
-      console.log("Selected Role:", selectedRole);
-      console.log("Selected Options:", selectedOptions);
-      onSuccess(); // Виклик функції після успішного логіну
-    } catch {
-      setError("Login failed. Please try again.");
+    const result = await signIn("credentials", {
+      email: formData.email,
+      password: formData.password,
+      redirect: false,
+    });
+
+    if (result?.error) {
+      setError("Login failed. Please check your credentials.");
+    } else {
+      onSuccess();
     }
   };
 
@@ -97,7 +96,6 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
               type="radio"
               name="role"
               value={roleOption.value}
-              onChange={() => handleRoleChange(roleOption.value)}
               className="w-4 h-4"
             />
             {roleOption.label}

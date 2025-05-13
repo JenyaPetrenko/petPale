@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
+
+import Navbar from "@/components/Navbar";
 import Modal from "@/components/Modal";
 import PetOwnerForm from "@/components/PetOwnerForm";
 import PetTakerForm from "@/components/PetTakerForm";
@@ -27,33 +28,7 @@ export default function Products() {
   return (
     <div id="produkterBODY">
       <header>
-        <nav>
-          <div id="navbar">
-            <Image
-              src="/assets/img/logo.png"
-              alt="logo"
-              width={50}
-              height={50}
-            />
-          </div>
-          <div id="navbar-links" className="display">
-            <Link id="link_home" href="/">
-              Home
-            </Link>
-            <Link id="link_about" href="/about">
-              About Us
-            </Link>
-            <Link id="link_product" href="/products">
-              Products
-            </Link>
-            <Link id="link_review" href="/reviews">
-              Reviews
-            </Link>
-            <Link id="link_kontakt" href="/kontakt">
-              Contact
-            </Link>
-          </div>
-        </nav>
+        <Navbar></Navbar>
       </header>
 
       <main>

@@ -6,6 +6,7 @@ import Button from "@/components/Button";
 interface State {
   name: string;
   email: string;
+  password: string;
   phone: string;
   location: string;
   availability: string;
@@ -21,6 +22,7 @@ type Action =
 const initialState: State = {
   name: "",
   email: "",
+  password: "",
   phone: "",
   location: "",
   availability: "",
@@ -67,18 +69,35 @@ const PetTakerForm: React.FC = () => {
   };
 
   // Обробник надсилання форми
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Простий приклад валідації
-    if (!state.name || !state.email || !state.phone) {
-      alert("Please fill out all required fields.");
-      return;
-    }
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: state.name,
+          email: state.email,
+          password: state.password,
+          role: "caretaker", // або "caretaker"
+          location: state.location,
+          availability: state.availability,
+          phone: state.phone,
+          image: state.image,
+        }),
+      });
 
-    console.log("Caretaker Form Data:", state);
-    setSuccessMessage("You are registered now as Pet Caretaker!");
-    dispatch({ type: "reset" }); // Очищення форми після успішного надсилання
+      if (!res.ok) {
+        throw new Error("Failed to register");
+      }
+
+      setSuccessMessage("You are registered as Pet CareTaker!");
+      dispatch({ type: "reset" });
+    } catch (err) {
+      console.error(err);
+      setSuccessMessage("Something went wrong!");
+    }
   };
 
   return (
@@ -111,6 +130,15 @@ const PetTakerForm: React.FC = () => {
           onChange={handleChange}
           className="w-full border border-gray-300 p-2 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-green-500"
         />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={state.password}
+          onChange={handleChange}
+          className="w-full border border-gray-300 p-2 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-green-500"
+        />
+
         <input
           type="tel"
           name="phone"

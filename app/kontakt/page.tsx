@@ -3,57 +3,20 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import Navbar from "@/components/Navbar";
+
 export default function Contact() {
   return (
     <div className="kontakt">
       <header>
-        <nav>
-          <div id="navbar">
-            <Image src="/img/logo.png" alt="logo" width={50} height={50} />
-            <svg
-              id="hamburger"
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="feather feather-align-justify"
-            >
-              <line x1="21" y1="10" x2="3" y2="10"></line>
-              <line x1="21" y1="6" x2="3" y2="6"></line>
-              <line x1="21" y1="14" x2="3" y2="14"></line>
-              <line x1="21" y1="18" x2="3" y2="18"></line>
-            </svg>
-          </div>
-          <div id="navbar-links" className="display">
-            <Link id="link_home" href="/">
-              Home
-            </Link>
-            <Link id="link_about" href="/about">
-              About Us
-            </Link>
-            <Link id="link_product" href="/products">
-              Products
-            </Link>
-            <Link id="link_review" href="/reviews">
-              Reviews
-            </Link>
-            <Link id="link_kontakt" href="/kontakt">
-              Contact
-            </Link>
-          </div>
-        </nav>
+        <Navbar></Navbar>
       </header>
 
       <div className="wrapper">
         <div className="images">
           <div className="display-none-mobile">
             <Image
-              src="/img/office2.png"
+              src="/public/assets/img/office2.png"
               alt="office"
               width={600}
               height={400}

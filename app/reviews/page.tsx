@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import Navbar from "@/components/Navbar";
 
 export default function Reviews() {
   // Статичні дані для відображення
@@ -17,7 +17,7 @@ export default function Reviews() {
     {
       id: 2,
       name: "Sven",
-      image: "/img/Reviewers/person2.jpg",
+      image: "/public/assets/img/Reviewers/person2.jpg",
       comment:
         "I was going out of town for a week. And thanks to Petpals, I managed to find the perfect caretaker for Fred.",
       stars: 5,
@@ -35,18 +35,7 @@ export default function Reviews() {
   return (
     <div id="referenserBODY">
       <header>
-        <nav>
-          <div id="navbar">
-            <Image src="/img/logo.png" alt="logo" width={50} height={50} />
-          </div>
-          <div id="navbar-links">
-            <Link href="/">Home</Link>
-            <Link href="/about">About Us</Link>
-            <Link href="/products">Products</Link>
-            <Link href="/reviews">Reviews</Link>
-            <Link href="/kontakt">Contact</Link>
-          </div>
-        </nav>
+        <Navbar></Navbar>
       </header>
 
       <main>
