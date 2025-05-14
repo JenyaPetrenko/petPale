@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-
+import React, { useEffect, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 import { Providers } from "./providers";
@@ -14,6 +14,17 @@ import Button from "@/components/Button";
 export default function Home() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const { data: session } = useSession();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const loginParam = searchParams.get("login");
+
+  useEffect(() => {
+    if (loginParam === "true") {
+      setIsLoginOpen(true);
+      router.replace("/", { scroll: false }); // очищення URL
+    }
+  }, [loginParam, router]);
 
   return (
     <Providers>
@@ -23,7 +34,6 @@ export default function Home() {
         </header>
         <div className="wrapper">
           <main className="text-center space-y-4 mt-10">
-            {/* 👋 2. Блок вітання */}
             {session?.user && (
               <h2 className="text-2xl font-semibold text-green-600">
                 👋 Welcome, {session.user.name || session.user.email}!
@@ -40,9 +50,11 @@ export default function Home() {
             </Button>
           </main>
         </div>
+
         <Modal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)}>
           <LoginForm onSuccess={() => setIsLoginOpen(false)} />
         </Modal>
+
         <Footer />
       </div>
     </Providers>

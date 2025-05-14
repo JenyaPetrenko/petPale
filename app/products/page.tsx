@@ -8,6 +8,7 @@ import Modal from "@/components/Modal";
 import PetOwnerForm from "@/components/PetOwnerForm";
 import PetTakerForm from "@/components/PetTakerForm";
 import Button from "@/components/Button";
+import Footer from "@/components/Footer";
 
 export default function Products() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -58,7 +59,7 @@ export default function Products() {
                 onClick={() => handleOpenModal("owner")}
                 className="productCard__btn"
               >
-                Join
+                Join as Pet Owner
               </Button>
             </div>
 
@@ -79,15 +80,14 @@ export default function Products() {
                 onClick={() => handleOpenModal("caretaker")}
                 className="productCard__btn"
               >
-                Join
+                Join as Pet Caretaker
               </Button>
             </div>
           </div>
         </section>
       </main>
 
-      <footer className="footer">{/* Footer content */}</footer>
-
+      <Footer></Footer>
       {/* Modal for forms */}
       <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
         {activeForm === "owner" && <PetOwnerForm />}

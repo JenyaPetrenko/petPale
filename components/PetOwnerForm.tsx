@@ -1,8 +1,9 @@
-import React, { useReducer, useState } from "react";
+"use client";
 
+import React, { useReducer, useState } from "react";
+import { useRouter } from "next/navigation";
 import Button from "@/components/Button";
 
-// Типи для стану форми
 interface State {
   name: string;
   email: string;
@@ -10,7 +11,7 @@ interface State {
   phone: string;
   petType: string;
   petName: string;
-  petAge: number;
+  petAge: string | number;
   petBreed: string;
   petGender: string;
   petImage: string;
@@ -18,12 +19,10 @@ interface State {
   availability: string;
 }
 
-// Типи для дій у `useReducer`
 type Action =
   | { type: "updateField"; field: keyof State; value: string | number }
   | { type: "reset" };
 
-// Початковий стан форми
 const initialState: State = {
   name: "",
   email: "",
@@ -39,7 +38,6 @@ const initialState: State = {
   availability: "",
 };
 
-// Редʼюсер для управління станом
 function formReducer(state: State, action: Action): State {
   switch (action.type) {
     case "updateField":
@@ -54,8 +52,8 @@ function formReducer(state: State, action: Action): State {
 const PetOwnerForm: React.FC = () => {
   const [state, dispatch] = useReducer(formReducer, initialState);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const router = useRouter();
 
-  // Обробник змін у текстових полях
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -68,7 +66,6 @@ const PetOwnerForm: React.FC = () => {
     });
   };
 
-  // Обробник зміни файлу
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -79,10 +76,6 @@ const PetOwnerForm: React.FC = () => {
       });
     }
   };
-
-  // components/PetOwnerForm.tsx
-
-  // components/PetOwnerForm.tsx
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,6 +89,7 @@ const PetOwnerForm: React.FC = () => {
         password: state.password,
         role: "owner",
         location: state.location,
+        phone: state.phone,
         petType: state.petType,
         petName: state.petName,
         petAge: state.petAge,
@@ -108,11 +102,12 @@ const PetOwnerForm: React.FC = () => {
 
     if (!res.ok) {
       console.error("Failed to register");
+      setSuccessMessage("Something went wrong!");
       return;
     }
 
     setSuccessMessage("You are registered as Pet Owner!");
-    dispatch({ type: "reset" });
+    setTimeout(() => dispatch({ type: "reset" }), 500);
   };
 
   return (
@@ -125,7 +120,6 @@ const PetOwnerForm: React.FC = () => {
           Join as Pet Owner
         </h2>
 
-        {/* Повідомлення про успіх */}
         {successMessage && (
           <p className="text-green-500 text-sm text-center">{successMessage}</p>
         )}
@@ -133,43 +127,46 @@ const PetOwnerForm: React.FC = () => {
         <input
           type="text"
           name="name"
+          required
           value={state.name}
           onChange={handleChange}
           placeholder="Name"
-          className="w-full border border-gray-300 p-2 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-green-500"
+          className="w-full border border-gray-300 p-2 rounded-md text-sm"
         />
         <input
           type="email"
           name="email"
+          required
           value={state.email}
           onChange={handleChange}
           placeholder="Email"
-          className="w-full border border-gray-300 p-2 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-green-500"
+          className="w-full border border-gray-300 p-2 rounded-md text-sm"
         />
         <input
           type="password"
           name="password"
-          placeholder="Password"
+          required
           value={state.password}
           onChange={handleChange}
-          className="w-full border border-gray-300 p-2 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-green-500"
+          placeholder="Password"
+          className="w-full border border-gray-300 p-2 rounded-md text-sm"
         />
-
         <input
           type="tel"
           name="phone"
           value={state.phone}
           onChange={handleChange}
           placeholder="Phone"
-          className="w-full border border-gray-300 p-2 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-green-500"
+          className="w-full border border-gray-300 p-2 rounded-md text-sm"
         />
         <input
           type="text"
           name="petType"
+          required
           value={state.petType}
           onChange={handleChange}
           placeholder="Pet Type (e.g., Dog, Cat)"
-          className="w-full border border-gray-300 p-2 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-green-500"
+          className="w-full border border-gray-300 p-2 rounded-md text-sm"
         />
         <input
           type="text"
@@ -177,7 +174,7 @@ const PetOwnerForm: React.FC = () => {
           value={state.petName}
           onChange={handleChange}
           placeholder="Pet Name"
-          className="w-full border border-gray-300 p-2 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-green-500"
+          className="w-full border border-gray-300 p-2 rounded-md text-sm"
         />
         <input
           type="number"
@@ -185,7 +182,7 @@ const PetOwnerForm: React.FC = () => {
           value={state.petAge}
           onChange={handleChange}
           placeholder="Pet Age (years)"
-          className="w-full border border-gray-300 p-2 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-green-500"
+          className="w-full border border-gray-300 p-2 rounded-md text-sm"
         />
         <input
           type="text"
@@ -193,13 +190,13 @@ const PetOwnerForm: React.FC = () => {
           value={state.petBreed}
           onChange={handleChange}
           placeholder="Pet Breed"
-          className="w-full border border-gray-300 p-2 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-green-500"
+          className="w-full border border-gray-300 p-2 rounded-md text-sm"
         />
         <select
           name="petGender"
           value={state.petGender}
           onChange={handleChange}
-          className="w-full border border-gray-300 p-2 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-green-500"
+          className="w-full border border-gray-300 p-2 rounded-md text-sm"
         >
           <option value="">Select Gender</option>
           <option value="Male">Male</option>
@@ -210,24 +207,32 @@ const PetOwnerForm: React.FC = () => {
           name="petImage"
           accept="image/*"
           onChange={handleFileChange}
-          className="w-full border border-gray-300 p-2 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-green-500"
+          className="w-full border border-gray-300 p-2 rounded-md text-sm"
         />
         <input
           type="text"
           name="location"
+          required
           value={state.location}
           onChange={handleChange}
           placeholder="Location"
-          className="w-full border border-gray-300 p-2 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-green-500"
+          className="w-full border border-gray-300 p-2 rounded-md text-sm"
         />
         <textarea
           name="availability"
           value={state.availability}
           onChange={handleChange}
           placeholder="Availability (e.g., Weekends)"
-          className="w-full border border-gray-300 p-2 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-green-500 h-24"
+          className="w-full border border-gray-300 p-2 rounded-md text-sm h-24"
         />
-        <Button>Join as Pet Owner</Button>
+
+        {!successMessage ? (
+          <Button>Join as Pet Owner</Button>
+        ) : (
+          <Button onClick={() => router.push("/?login=true")}>
+            Go to Login
+          </Button>
+        )}
       </form>
     </div>
   );

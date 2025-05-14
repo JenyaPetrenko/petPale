@@ -363,11 +363,11 @@ nav #navbar img:hover {
   margin: 20px;
 }
 
-.kontakt .wrapper .form button:hover {
+/* .kontakt .wrapper .form button:hover {
   cursor: pointer;
   border: solid 2px darkorange;
   transition-duration: 300ms;
-}
+} */
 
 @media (min-width: 1024px) {
   .kontakt .wrapper {
