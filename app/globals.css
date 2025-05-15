@@ -680,8 +680,18 @@ nav #navbar img:hover {
 }
 
 #referenserBODY #reviewCards .reviewCard .container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
   background-color: #db5c5c;
   border-radius: 0.5rem;
+  padding: 1rem;
+  flex-wrap: wrap;
+  width: 250px;
+  height: 600px;
+  margin: 0;
+  padding: 3rem 0 1rem 0;
 }
 
 #referenserBODY #reviewCards .reviewCard .container .container {
