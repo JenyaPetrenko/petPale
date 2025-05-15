@@ -1,113 +1,5 @@
 @import "tailwindcss";
 
-nav {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  background-color: transparent;
-}
-
-nav #navbar {
-  height: 2rem;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.5rem;
-}
-
-nav #navbar > span {
-  height: 100%; /* Робимо контейнер зображення повної висоти */
-  display: flex;
-  align-items: center;
-}
-
-nav #navbar img {
-  object-fit: contain; /* Пропорційне масштабування зображення */
-  height: 35px; /* Висота зображення */
-  width: 35px; /* Масштабуємо зображення в межах контейнера */
-  width: auto; /* Зберігаємо пропорції */
-}
-nav #navbar img:hover {
-  cursor: pointer;
-}
-
-#navbar-links {
-  position: fixed;
-  width: 100vw;
-  height: 100vh;
-  background-color: white;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  animation: slide-in-top 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-}
-
-#navbar-links a {
-  margin: 0.5rem;
-  color: black;
-  text-decoration: none;
-}
-
-#navbar-links a:active {
-  color: black;
-}
-
-#navbar-links a:hover {
-  text-decoration: underline;
-}
-
-.display {
-  display: none !important;
-}
-
-.scrollLock {
-  overflow: hidden;
-}
-
-.bgWhite {
-  background-color: white;
-}
-
-@keyframes slide-in-top {
-  0% {
-    transform: translateY(-1000px);
-    opacity: 0;
-  }
-
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@media (min-width: 768px) {
-  #navbar {
-    display: flex;
-    flex-direction: row;
-  }
-
-  #navbar #hamburger {
-    display: none;
-  }
-
-  #navbar-links {
-    position: fixed;
-    display: block !important;
-    top: 1rem;
-    width: 30rem;
-    right: 1rem;
-    text-align: right;
-    padding: 0.5rem;
-    height: 2rem;
-    background-color: transparent;
-    display: inline-block;
-    animation: none;
-    padding: 0;
-  }
-}
-
 .footer {
   width: 100%;
   background-color: #f2efc7;
@@ -234,7 +126,7 @@ nav #navbar img:hover {
 
 .index .wrapper main button:hover {
   cursor: pointer;
-  border: solid 2px darkorange;
+  border: solid 2px #ff8c00;
   transition-duration: 300ms;
 }
 

@@ -213,7 +213,7 @@ function ProfileField({
           className="border border-gray-300 rounded px-3 py-1 w-full sm:w-[300px] focus:outline-none focus:ring-2 focus:ring-[#426a5a]"
         />
       ) : (
-        <span>{value || "—"}</span>
+        <span>{value || "Not provided"}</span>
       )}
     </div>
   );
