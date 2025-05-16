@@ -16,7 +16,8 @@ export async function POST(req: Request) {
     const role = formData.get("role") as string;
     const location = formData.get("location") as string;
     const phone = formData.get("phone") as string;
-    const availability = formData.get("availability") as string;
+    const availabilityFrom = formData.get("availabilityFrom") as string;
+    const availabilityUntil = formData.get("availabilityUntil") as string;
 
     // Owner-specific fields
     const petType = formData.get("petType") as string;
@@ -28,7 +29,7 @@ export async function POST(req: Request) {
     // File upload (shared for both roles)
     const file = formData.get("image") as File | null;
 
-    // Валідація обов'язкових полів
+    // Validate required fields
     if (!name || !email || !password || !location) {
       return NextResponse.json(
         { message: "Missing required fields" },
@@ -43,13 +44,6 @@ export async function POST(req: Request) {
       );
     }
 
-    if (role === "owner" && !petType) {
-      return NextResponse.json(
-        { message: "Missing required fields for owner" },
-        { status: 400 }
-      );
-    }
-
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return NextResponse.json(
@@ -60,7 +54,7 @@ export async function POST(req: Request) {
 
     let imageUrl = "";
 
-    // Обробка фото
+    // Handle image upload
     if (file && file.type.startsWith("image/")) {
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
@@ -81,8 +75,9 @@ export async function POST(req: Request) {
         role,
         location,
         phone: phone || null,
-        availability: availability || null,
         image: imageUrl || null,
+        availabilityFrom: availabilityFrom ? new Date(availabilityFrom) : null,
+        availabilityTo: availabilityUntil ? new Date(availabilityUntil) : null,
         ...(role === "owner" && {
           petType,
           petName,

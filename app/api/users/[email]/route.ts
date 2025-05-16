@@ -4,9 +4,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { promises as fs } from "fs";
 import path from "path";
-import { Prisma } from "@prisma/client"; // Import Prisma types
 
-// Ensure the "uploads" directory exists
 const uploadDir = path.join(process.cwd(), "public/uploads");
 
 async function ensureUploadDir() {
@@ -17,16 +15,24 @@ async function ensureUploadDir() {
   }
 }
 
-// Define the type of updates based on the Prisma User model
-type UserUpdateInput = Partial<Prisma.UserUpdateInput>;
+type UserUpdateInput = {
+  availabilityFrom?: { set: Date | null };
+  availabilityTo?: { set: Date | null }; // Додано поле availabilityTo
+  [key: string]:
+    | string
+    | number
+    | Date
+    | null
+    | { set: Date | null }
+    | undefined; // Уточнено, що це за типи
+};
 
-// GET — отримати дані користувача
+// GET — Fetch user data
+// GET — Fetch user data
 export async function GET(
   _: Request,
   { params }: { params: { email: string } }
 ) {
-  // Зберігаємо значення email
-
   const user = await prisma.user.findUnique({
     where: { email: params.email },
   });
@@ -38,14 +44,14 @@ export async function GET(
   return NextResponse.json({ user });
 }
 
-// PUT — оновити дані користувача
+// PUT — Update user data
+// PUT — Update user data
 export async function PUT(
   request: Request,
   { params }: { params: { email: string } }
 ) {
   const email = params.email;
 
-  // Перевіряємо заголовки на правильність типу запиту
   const contentType = request.headers.get("content-type") || "";
   if (!contentType.includes("multipart/form-data")) {
     return NextResponse.json(
@@ -59,21 +65,20 @@ export async function PUT(
   const formData = await request.formData();
   const updates: UserUpdateInput = {};
 
-  // Обробка текстових полів
+  // Process text fields
   formData.forEach((value, key) => {
-    if (key !== "image") {
-      updates[key as keyof UserUpdateInput] = value as string;
+    if (key === "availabilityFrom" || key === "availabilityUntil") {
+      updates[key] = value ? { set: new Date(value as string) } : { set: null };
+    } else if (key !== "image") {
+      updates[key] = value as string;
     }
   });
 
-  // Обробка файлу зображення
+  // Process image upload
   const imageFile = formData.get("image");
-  let imagePath = null;
-
   if (imageFile instanceof File) {
     const fileName = `${Date.now()}-${imageFile.name}`;
-    imagePath = `/uploads/${fileName}`;
-
+    const imagePath = `/uploads/${fileName}`;
     const fileBuffer = await imageFile.arrayBuffer();
     await fs.writeFile(path.join(uploadDir, fileName), Buffer.from(fileBuffer));
     updates.image = imagePath;

@@ -128,6 +128,32 @@ export default function ProfileContainer() {
               onChange={handleInputChange}
               editable={editMode}
             />
+            <ProfileField
+              label="Availability From"
+              name="availabilityFrom"
+              value={
+                formState.availabilityFrom
+                  ? new Date(formState.availabilityFrom)
+                      .toISOString()
+                      .split("T")[0]
+                  : ""
+              }
+              onChange={handleInputChange}
+              editable={editMode}
+            />
+            <ProfileField
+              label="Availability Until"
+              name="availabilityUntil"
+              value={
+                formState.availabilityTo
+                  ? new Date(formState.availabilityTo)
+                      .toISOString()
+                      .split("T")[0]
+                  : ""
+              }
+              onChange={handleInputChange}
+              editable={editMode}
+            />
             {/* Зображення профілю */}
             {editMode && (
               <div className="mb-2">
@@ -204,9 +230,28 @@ export default function ProfileContainer() {
                   editable={editMode}
                 />
                 <ProfileField
-                  label="Availability"
-                  name="availability"
-                  value={formState.availability}
+                  label="Availability From"
+                  name="availabilityFrom"
+                  value={
+                    formState.availabilityFrom
+                      ? new Date(formState.availabilityFrom)
+                          .toISOString()
+                          .split("T")[0]
+                      : ""
+                  }
+                  onChange={handleInputChange}
+                  editable={editMode}
+                />
+                <ProfileField
+                  label="Availability Until"
+                  name="availabilityUntil"
+                  value={
+                    formState.availabilityTo
+                      ? new Date(formState.availabilityTo)
+                          .toISOString()
+                          .split("T")[0]
+                      : ""
+                  }
                   onChange={handleInputChange}
                   editable={editMode}
                 />

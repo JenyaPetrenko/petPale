@@ -65,8 +65,20 @@ export default function ProfileView({ user }: { user: User }) {
                   {user.petGender}
                 </p>
                 <p>
-                  <span className="font-semibold">Availability:</span>{" "}
-                  {user.availability}
+                  <span className="font-semibold text-[#426a5a]">
+                    Availability From:
+                  </span>{" "}
+                  {user.availabilityFrom
+                    ? new Date(user.availabilityFrom).toLocaleDateString()
+                    : "Not provided"}
+                </p>
+                <p>
+                  <span className="font-semibold text-[#426a5a]">
+                    Availability Until:
+                  </span>{" "}
+                  {user.availabilityTo
+                    ? new Date(user.availabilityTo).toLocaleDateString()
+                    : "Not provided"}
                 </p>
 
                 {user.image && (
