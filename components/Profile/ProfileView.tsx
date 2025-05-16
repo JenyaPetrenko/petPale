@@ -1,3 +1,5 @@
+//ProfileView.tsx
+
 import Image from "next/image";
 import type { User } from "@prisma/client"; // тип згенерований Prisma
 

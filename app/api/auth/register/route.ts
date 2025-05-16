@@ -28,7 +28,7 @@ export async function POST(req: Request) {
     // File upload (shared for both roles)
     const file = formData.get("image") as File | null;
 
-    // Валідація обов'язкових полів залежно від ролі
+    // Валідація обов'язкових полів
     if (!name || !email || !password || !location) {
       return NextResponse.json(
         { message: "Missing required fields" },
@@ -43,18 +43,9 @@ export async function POST(req: Request) {
       );
     }
 
-    if (role === "owner") {
-      if (!petType) {
-        return NextResponse.json(
-          { message: "Missing required fields for owner" },
-          { status: 400 }
-        );
-      }
-    }
-
-    if (role !== "owner" && role !== "caretaker") {
+    if (role === "owner" && !petType) {
       return NextResponse.json(
-        { message: "Invalid role specified" },
+        { message: "Missing required fields for owner" },
         { status: 400 }
       );
     }
@@ -69,8 +60,8 @@ export async function POST(req: Request) {
 
     let imageUrl = "";
 
-    // Тільки якщо файл є — обробляємо
-    if (file && typeof file === "object" && file.type.startsWith("image/")) {
+    // Обробка фото
+    if (file && file.type.startsWith("image/")) {
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
       const uploadsDir = path.join(process.cwd(), "public/uploads");
@@ -93,23 +84,13 @@ export async function POST(req: Request) {
         availability: availability || null,
         image: imageUrl || null,
         ...(role === "owner" && {
-          petType: petType || null,
-          petName: petName || null,
-          petAge: petAge ? String(petAge) : null,
-          petBreed: petBreed || null,
-          petGender: petGender || null,
+          petType,
+          petName,
+          petAge,
+          petBreed,
+          petGender,
         }),
       },
-    });
-
-    console.log("New user registration", {
-      name,
-      email,
-      role,
-      location,
-      phone,
-      availability,
-      imageUrl: imageUrl || null,
     });
 
     return NextResponse.json(

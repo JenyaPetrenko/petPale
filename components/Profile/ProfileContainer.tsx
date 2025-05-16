@@ -1,3 +1,5 @@
+//ProfileContainer.tsx
+
 "use client";
 
 import { useSession } from "next-auth/react";
@@ -14,8 +16,9 @@ export default function ProfileContainer() {
   const [editMode, setEditMode] = useState(false);
   const [formState, setFormState] = useState<Partial<User>>({});
   const [email, setEmail] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
-  // Завантаження користувача після логіну
+  // Завантаження даних користувача після логіну
   useEffect(() => {
     if (session?.user?.email) {
       const userEmail = session.user.email;
@@ -25,14 +28,18 @@ export default function ProfileContainer() {
         .then((data) => {
           setUser(data.user);
           setFormState(data.user);
-        });
+        })
+        .catch((error) => console.error("Error fetching user data:", error));
     }
   }, [session?.user?.email]);
 
-  if (status === "loading") return <p className="p-4">Loading...</p>;
-  if (!session)
+  if (status === "loading" || !user) {
+    return <p className="p-4">Loading...</p>;
+  }
+
+  if (!session) {
     return <p className="p-4">You must be logged in to view this page.</p>;
-  if (!user) return <p className="p-4">Loading user data...</p>;
+  }
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -41,28 +48,52 @@ export default function ProfileContainer() {
     setFormState((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.[0]) {
+      setImageFile(e.target.files[0]);
+    }
+  };
+
   const handleSave = async () => {
     if (!email) return;
 
-    const res = await fetch(`/api/users/${email}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formState),
-    });
+    try {
+      const formData = new FormData();
+      Object.entries(formState).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          formData.append(key, value.toString());
+        }
+      });
 
-    if (res.ok) {
+      if (imageFile) {
+        formData.append("image", imageFile);
+      }
+
+      const res = await fetch(`/api/users/${email}`, {
+        method: "PUT",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error(`Failed to save user: ${res.statusText}`);
+      }
+
       const updated = await res.json();
       setUser(updated.user);
       setFormState(updated.user);
+      setImageFile(null);
       setEditMode(false);
+    } catch (error) {
+      console.error("Error saving user data:", error);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col ">
+    <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-1 flex items-start justify-center p-4 mt-36">
         <div className="w-full max-w-2xl">
+          {/* Секція: My Profile */}
           <h1 className="text-3xl font-bold text-[#426a5a] mb-6 border-b pb-2">
             My Profile
           </h1>
@@ -76,7 +107,13 @@ export default function ProfileContainer() {
               editable={editMode}
             />
             <ProfileField label="Email" value={user.email} disabled />
-            <ProfileField label="Role" value={user.role} disabled />
+            <ProfileField
+              label="Role"
+              name="role"
+              value={formState.role}
+              onChange={handleInputChange}
+              editable={editMode}
+            />
             <ProfileField
               label="Phone"
               name="phone"
@@ -91,46 +128,78 @@ export default function ProfileContainer() {
               onChange={handleInputChange}
               editable={editMode}
             />
+            {/* Зображення профілю */}
+            {editMode && (
+              <div className="mb-2">
+                <label className="font-semibold text-[#426a5a] w-32 block">
+                  Add Photo:
+                </label>
+                <input
+                  type="file"
+                  name="image"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="w-full border border-gray-300 rounded px-3 py-1"
+                />
+              </div>
+            )}
+
+            {!editMode && user.image && (
+              <div className="mt-4">
+                <Image
+                  src={`${user.image}?${Date.now()}`}
+                  alt="User Profile"
+                  width={200}
+                  height={200}
+                  className="rounded-xl border"
+                />
+              </div>
+            )}
+            {!editMode && !user.image && (
+              <span className="text-sm text-gray-500">No image provided</span>
+            )}
           </div>
 
+          {/* Секція: Pet Information (для owner) */}
           {user.role === "owner" && (
-            <div className="mt-8">
-              <h2 className="text-2xl font-semibold text-[#426a5a] mb-4 border-b pb-2">
+            <>
+              <h2 className="text-2xl font-semibold text-[#426a5a] mt-8 mb-4 border-b pb-2">
                 Pet Information
               </h2>
+
               <div className="space-y-2 text-gray-700">
                 <ProfileField
-                  label="Type"
+                  label="Pet Type"
                   name="petType"
                   value={formState.petType}
                   onChange={handleInputChange}
                   editable={editMode}
                 />
                 <ProfileField
-                  label="Name"
+                  label="Pet Name"
                   name="petName"
                   value={formState.petName}
                   onChange={handleInputChange}
                   editable={editMode}
                 />
                 <ProfileField
-                  label="Age"
+                  label="Pet Age"
                   name="petAge"
                   value={formState.petAge}
                   onChange={handleInputChange}
                   editable={editMode}
                 />
                 <ProfileField
-                  label="Breed"
-                  name="petBreed"
-                  value={formState.petBreed}
+                  label="Pet Gender"
+                  name="petGender"
+                  value={formState.petGender}
                   onChange={handleInputChange}
                   editable={editMode}
                 />
                 <ProfileField
-                  label="Gender"
-                  name="petGender"
-                  value={formState.petGender}
+                  label="Pet Breed"
+                  name="petBreed"
+                  value={formState.petBreed}
                   onChange={handleInputChange}
                   editable={editMode}
                 />
@@ -141,39 +210,11 @@ export default function ProfileContainer() {
                   onChange={handleInputChange}
                   editable={editMode}
                 />
-                {user.image && (
-                  <div className="mt-4">
-                    <Image
-                      src={user.image}
-                      alt="Pet"
-                      width={200}
-                      height={200}
-                      className="rounded-xl border"
-                    />
-                  </div>
-                )}
               </div>
-            </div>
+            </>
           )}
 
-          {user.role === "caretaker" && (
-            <div className="mt-8">
-              <h2 className="text-2xl font-semibold text-[#426a5a]">
-                Caretaker Info
-              </h2>
-              <ProfileField
-                label="Availability"
-                name="availability"
-                value={formState.availability}
-                onChange={handleInputChange}
-                editable={editMode}
-              />
-              <p>
-                <span className="font-semibold">Rating:</span> ⭐⭐⭐⭐☆
-              </p>
-            </div>
-          )}
-
+          {/* Кнопки для редагування та збереження */}
           <div className="mt-6 flex gap-4">
             {!editMode ? (
               <Button onClick={() => setEditMode(true)}>Edit</Button>
