@@ -67,10 +67,10 @@ export default function ProfileView({ user }: { user: User }) {
                   {user.availability}
                 </p>
 
-                {user.petImage && (
+                {user.image && (
                   <div className="mt-4">
                     <Image
-                      src={user.petImage}
+                      src={user.image}
                       alt="Pet"
                       width={200}
                       height={200}

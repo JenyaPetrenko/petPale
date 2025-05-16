@@ -1,9 +1,12 @@
+//components/PetTakerForm.tsx
+
 "use client";
 
 import React, { useReducer, useState } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/components/Button";
 
+// Типи для стану форми
 interface State {
   name: string;
   email: string;
@@ -12,12 +15,15 @@ interface State {
   location: string;
   availability: string;
   image: string;
+  imageFile: File | null;
 }
 
+// Дії редʼюсера
 type Action =
-  | { type: "updateField"; field: keyof State; value: string }
+  | { type: "updateField"; field: keyof State; value: string | File | null }
   | { type: "reset" };
 
+// Початковий стан
 const initialState: State = {
   name: "",
   email: "",
@@ -26,8 +32,10 @@ const initialState: State = {
   location: "",
   availability: "",
   image: "",
+  imageFile: null,
 };
 
+// Редʼюсер
 function formReducer(state: State, action: Action): State {
   switch (action.type) {
     case "updateField":
@@ -55,8 +63,9 @@ const PetTakerForm: React.FC = () => {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
+    if (e.target.files?.[0]) {
       const file = e.target.files[0];
+      dispatch({ type: "updateField", field: "imageFile", value: file });
       dispatch({
         type: "updateField",
         field: "image",
@@ -68,32 +77,36 @@ const PetTakerForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const formData = new FormData();
+    formData.append("name", state.name);
+    formData.append("email", state.email);
+    formData.append("password", state.password);
+    formData.append("role", "caretaker");
+    formData.append("location", state.location);
+    formData.append("availability", state.availability);
+    formData.append("phone", state.phone);
+    if (state.imageFile) {
+      formData.append("image", state.imageFile);
+    }
+
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: state.name,
-          email: state.email,
-          password: state.password,
-          role: "caretaker",
-          location: state.location,
-          availability: state.availability,
-          phone: state.phone,
-          image: state.image,
-        }),
+        body: formData,
       });
 
+      const data = await res.json(); // Отримаємо і message, і error
+
       if (!res.ok) {
-        throw new Error("Failed to register");
+        console.error("❌ Register error:", data.message, data.error); // ВИВОДИМО ВСЕ
+        setSuccessMessage(data.message || "Error occurred");
+        return;
       }
 
       setSuccessMessage("You are registered as Pet CareTaker!");
-
-      // Optional: clear form after short delay
       setTimeout(() => dispatch({ type: "reset" }), 500);
     } catch (err) {
-      console.error(err);
+      console.error("❌ Unexpected error:", err);
       setSuccessMessage("Something went wrong!");
     }
   };
@@ -102,6 +115,7 @@ const PetTakerForm: React.FC = () => {
     <div className="flex items-center justify-center min-h-screen bg-gray-50 p-4 mt-20">
       <form
         onSubmit={handleSubmit}
+        encType="multipart/form-data"
         className="flex flex-col gap-4 bg-white p-6 rounded-md shadow-md w-full max-w-md"
       >
         <h2 className="text-2xl font-bold text-gray-800 text-center">

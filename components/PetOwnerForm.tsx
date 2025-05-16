@@ -14,13 +14,17 @@ interface State {
   petAge: string | number;
   petBreed: string;
   petGender: string;
-  petImage: string;
   location: string;
   availability: string;
+  imageFile: File | null;
 }
 
 type Action =
-  | { type: "updateField"; field: keyof State; value: string | number }
+  | {
+      type: "updateField";
+      field: keyof State;
+      value: string | number | File | null;
+    }
   | { type: "reset" };
 
 const initialState: State = {
@@ -30,12 +34,12 @@ const initialState: State = {
   phone: "",
   petType: "",
   petName: "",
-  petAge: 0,
+  petAge: "",
   petBreed: "",
   petGender: "",
-  petImage: "",
   location: "",
   availability: "",
+  imageFile: null,
 };
 
 function formReducer(state: State, action: Action): State {
@@ -67,12 +71,11 @@ const PetOwnerForm: React.FC = () => {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
+    if (e.target.files?.[0]) {
       dispatch({
         type: "updateField",
-        field: "petImage",
-        value: URL.createObjectURL(file),
+        field: "imageFile",
+        value: e.target.files[0],
       });
     }
   };
@@ -80,34 +83,50 @@ const PetOwnerForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: state.name,
-        email: state.email,
-        password: state.password,
-        role: "owner",
-        location: state.location,
-        phone: state.phone,
-        petType: state.petType,
-        petName: state.petName,
-        petAge: state.petAge,
-        petBreed: state.petBreed,
-        petGender: state.petGender,
-        petImage: state.petImage,
-        availability: state.availability,
-      }),
-    });
-
-    if (!res.ok) {
-      console.error("Failed to register");
-      setSuccessMessage("Something went wrong!");
+    if (state.password.length < 6) {
+      setSuccessMessage("Password must be at least 6 characters");
       return;
     }
 
-    setSuccessMessage("You are registered as Pet Owner!");
-    setTimeout(() => dispatch({ type: "reset" }), 500);
+    const formData = new FormData();
+    formData.append("name", state.name);
+    formData.append("email", state.email);
+    formData.append("password", state.password);
+    formData.append("role", "owner");
+    formData.append("location", state.location);
+    formData.append("phone", state.phone);
+    formData.append("petType", state.petType);
+    formData.append("petName", state.petName);
+    formData.append("petAge", String(state.petAge));
+    formData.append("petBreed", state.petBreed);
+    formData.append("petGender", state.petGender);
+    formData.append("availability", state.availability);
+    if (state.imageFile) {
+      formData.append("image", state.imageFile);
+    }
+
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.error("❌ Register error:", data.message);
+        setSuccessMessage(data.message || "Registration failed.");
+        return;
+      }
+
+      setSuccessMessage("You are registered as Pet Owner!");
+      setTimeout(() => {
+        dispatch({ type: "reset" });
+      }, 1000);
+    } catch (error) {
+      console.error(error);
+      setSuccessMessage("Something went wrong!");
+    }
   };
 
   return (
@@ -204,7 +223,7 @@ const PetOwnerForm: React.FC = () => {
         </select>
         <input
           type="file"
-          name="petImage"
+          name="image"
           accept="image/*"
           onChange={handleFileChange}
           className="w-full border border-gray-300 p-2 rounded-md text-sm"

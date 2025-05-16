@@ -23,11 +23,6 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const roles: RoleOption[] = [
-    { value: "owner", label: "Pet Owner" },
-    { value: "taker", label: "Pet Caretaker" },
-  ];
-
   const options: RoleOption[] = [
     { value: "newsletter", label: "Subscribe to newsletter" },
     { value: "updates", label: "Get updates about events" },
@@ -61,6 +56,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
       setError("Login failed. Please check your credentials.");
     } else {
       onSuccess();
+      window.location.reload();
     }
   };
 
@@ -88,20 +84,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
         className="w-full border border-gray-300 p-2 rounded-md text-sm"
         required
       />
-      <div className="flex flex-col gap-2">
-        <h3 className="text-sm font-medium text-gray-700">Select Role</h3>
-        {roles.map((roleOption) => (
-          <label key={roleOption.value} className="flex items-center gap-2">
-            <input
-              type="radio"
-              name="role"
-              value={roleOption.value}
-              className="w-4 h-4"
-            />
-            {roleOption.label}
-          </label>
-        ))}
-      </div>
+
       <div className="flex flex-col gap-2">
         <h3 className="text-sm font-medium text-gray-700">
           Additional Options

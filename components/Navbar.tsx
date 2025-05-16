@@ -17,7 +17,6 @@ export default function Navbar() {
             width={40}
             height={40}
             className="hover:cursor-pointer"
-            href="/home"
           />
         </Link>
 
@@ -60,7 +59,7 @@ export default function Navbar() {
               </Link>
               <button
                 onClick={() => signOut()}
-                className="text-red-600 hover:underline"
+                className="text-red-600 hover:underline pointer-fine: cursor-pointer"
               >
                 Logout
               </button>

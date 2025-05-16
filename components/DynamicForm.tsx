@@ -1,3 +1,5 @@
+//components/DynamicForm.tsx
+
 import React, { useReducer, useState } from "react";
 import Button from "@/components/Button";
 
@@ -51,7 +53,7 @@ const formConfigs: Record<string, FormConfig> = {
         type: "select",
         options: ["Male", "Female"],
       },
-      { label: "Pet Image", name: "petImage", type: "file" },
+      { label: "Pet Image", name: "image", type: "file" },
       {
         label: "Location",
         name: "location",
@@ -141,6 +143,19 @@ const DynamicForm: React.FC<{ formType: "owner" | "caretaker" }> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Перевірка обов'язкових полів перед відправкою
+    const requiredFields = formConfig.fields.filter((field) =>
+      ["name", "email", "password", "location"].includes(field.name)
+    );
+
+    for (const field of requiredFields) {
+      if (!state[field.name]) {
+        alert(`Field ${field.label} is required`);
+        return;
+      }
+    }
+
     console.log(`${formConfig.title} Data:`, state);
     setSuccessMessage(
       `You are registered as ${formConfig.title.split(" ")[2]}!`

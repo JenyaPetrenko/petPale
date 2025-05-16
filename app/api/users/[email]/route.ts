@@ -1,3 +1,5 @@
+//app/api/users/[email]/route.ts
+
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
@@ -24,6 +26,14 @@ export async function PUT(
 ) {
   const data = await request.json();
 
+  const existingUser = await prisma.user.findUnique({
+    where: { email: params.email },
+  });
+
+  if (!existingUser) {
+    return NextResponse.json({ message: "User not found" }, { status: 404 });
+  }
+
   try {
     const updatedUser = await prisma.user.update({
       where: { email: params.email },
@@ -31,7 +41,6 @@ export async function PUT(
         name: data.name,
         phone: data.phone,
         location: data.location,
-        // Додаткові поля:
         petName: data.petName,
         petType: data.petType,
         petBreed: data.petBreed,

@@ -21,8 +21,8 @@ model User {
   email         String   @unique
   emailVerified DateTime?
   password      String
-  petImage         String?
-  role          String?     // <--- нове поле
+  image         String? //user profile or pet image
+  role          String?     
   location     String?
   phone        String?
   petType     String?

@@ -13,10 +13,14 @@ export default function ProfileContainer() {
   const [user, setUser] = useState<User | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [formState, setFormState] = useState<Partial<User>>({});
+  const [email, setEmail] = useState<string | null>(null);
 
+  // Завантаження користувача після логіну
   useEffect(() => {
     if (session?.user?.email) {
-      fetch(`/api/users/${session.user.email}`)
+      const userEmail = session.user.email;
+      setEmail(userEmail);
+      fetch(`/api/users/${userEmail}`)
         .then((res) => res.json())
         .then((data) => {
           setUser(data.user);
@@ -38,15 +42,19 @@ export default function ProfileContainer() {
   };
 
   const handleSave = async () => {
-    const res = await fetch(`/api/users/${user.email}`, {
+    if (!email) return;
+
+    const res = await fetch(`/api/users/${email}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formState),
     });
 
     if (res.ok) {
+      const updated = await res.json();
+      setUser(updated.user);
+      setFormState(updated.user);
       setEditMode(false);
-      setUser(await res.json());
     }
   };
 
@@ -54,7 +62,7 @@ export default function ProfileContainer() {
     <div className="min-h-screen flex flex-col ">
       <Navbar />
       <main className="flex-1 flex items-start justify-center p-4 mt-36">
-        <div className="w-full max-w-2xl ">
+        <div className="w-full max-w-2xl">
           <h1 className="text-3xl font-bold text-[#426a5a] mb-6 border-b pb-2">
             My Profile
           </h1>
@@ -133,10 +141,10 @@ export default function ProfileContainer() {
                   onChange={handleInputChange}
                   editable={editMode}
                 />
-                {user.petImage && (
+                {user.image && (
                   <div className="mt-4">
                     <Image
-                      src={user.petImage}
+                      src={user.image}
                       alt="Pet"
                       width={200}
                       height={200}
@@ -150,7 +158,7 @@ export default function ProfileContainer() {
 
           {user.role === "caretaker" && (
             <div className="mt-8">
-              <h2 className="text-2xl font-semibold text-[#426a5a] ">
+              <h2 className="text-2xl font-semibold text-[#426a5a]">
                 Caretaker Info
               </h2>
               <ProfileField

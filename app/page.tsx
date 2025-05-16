@@ -1,10 +1,12 @@
+// clients rendering to use hooks
+
 "use client";
 
 import React, { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-import { Providers } from "./providers";
+import { Providers } from "./providers"; //
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Modal from "@/components/Modal";
@@ -13,8 +15,12 @@ import Button from "@/components/Button";
 
 export default function Home() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  // to open modal window for login
+
   const { data: session } = useSession();
-  const searchParams = useSearchParams();
+  // users info if user is logged (NextAuth)
+
+  const searchParams = useSearchParams(); //access to URL parameters open modal window for login
   const router = useRouter();
 
   const loginParam = searchParams.get("login");
@@ -22,12 +28,16 @@ export default function Home() {
   useEffect(() => {
     if (loginParam === "true") {
       setIsLoginOpen(true);
-      router.replace("/", { scroll: false }); // очищення URL
+
+      router.replace("/", { scroll: false });
+      //clear URL after login
     }
   }, [loginParam, router]);
+  // loginParam or router.
 
   return (
     <Providers>
+      {/* acces to global context. */}
       <div className="index">
         <header>
           <Navbar />
@@ -41,10 +51,12 @@ export default function Home() {
             )}
 
             <h2 className="text-2xl font-bold">For Animals. For Smiles.</h2>
+
             <p>
               Petpal connects pet owners seeking temporary homes with those
               eager to embrace pet companionship.
             </p>
+
             <Button className="CTA" onClick={() => setIsLoginOpen(true)}>
               To the Service
             </Button>

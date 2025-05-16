@@ -10,7 +10,7 @@ export interface OwnerForm {
   petAge: number;
   petBreed: string;
   petGender: string;
-  petImage: string;
+  image: string;
   location: string;
   availability: string;
 }
