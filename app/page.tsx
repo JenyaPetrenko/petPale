@@ -1,3 +1,5 @@
+//app/page.tsx  - the main page of the application (home page)
+
 // clients rendering to use hooks
 
 "use client";
@@ -20,7 +22,7 @@ export default function Home() {
   const { data: session } = useSession();
   // users info if user is logged (NextAuth)
 
-  const searchParams = useSearchParams(); //access to URL parameters open modal window for login
+  const searchParams = useSearchParams(); // access to URL parameters open modal window for login
   const router = useRouter();
 
   const loginParam = searchParams.get("login");
@@ -30,25 +32,36 @@ export default function Home() {
       setIsLoginOpen(true);
 
       router.replace("/", { scroll: false });
-      //clear URL after login
+      // clear URL after login
     }
   }, [loginParam, router]);
-  // loginParam or router.
+
+  const handleButtonClick = () => {
+    if (session?.user) {
+      // If the user is logged in, redirect to the dashboard
+      router.push("/dashboard");
+    } else {
+      // If the user is not logged in, open the login modal
+      setIsLoginOpen(true);
+    }
+  };
 
   return (
     <Providers>
-      {/* acces to global context. */}
+      {/* access to global context */}
       <div className="index">
         <header>
           <Navbar />
         </header>
         <div className="wrapper">
-          <main className="text-center space-y-4 mt-10">
-            {session?.user && (
-              <h2 className="text-2xl font-semibold text-green-600">
-                👋 Welcome, {session.user.name || session.user.email}!
-              </h2>
-            )}
+          <main className="text-center ">
+            <div className="mb-4">
+              {session?.user && (
+                <h2 className="text-2xl font-semibold text-[#426a5a]">
+                  👋 Welcome, {session.user.name || session.user.email}!
+                </h2>
+              )}
+            </div>
 
             <h2 className="text-2xl font-bold">For Animals. For Smiles.</h2>
 
@@ -57,7 +70,7 @@ export default function Home() {
               eager to embrace pet companionship.
             </p>
 
-            <Button className="CTA" onClick={() => setIsLoginOpen(true)}>
+            <Button className="CTA" onClick={handleButtonClick}>
               To the Service
             </Button>
           </main>

@@ -62,9 +62,10 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <h2 className="text-lg font-semibold text-gray-700 text-center">
-        Log In
+      <h2 className="text-lg font-semibold text-[#426a5a] text-center">
+        You need to be logged to get access to our services.
       </h2>
+
       {error && <p className="text-red-500 text-sm text-center">{error}</p>}
       <input
         type="email"

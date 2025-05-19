@@ -58,7 +58,7 @@ export default function Navbar() {
                 My Page
               </Link>
               <button
-                onClick={() => signOut()}
+                onClick={() => signOut({ callbackUrl: "/" })}
                 className="text-red-600 hover:underline pointer-fine: cursor-pointer"
               >
                 Logout
