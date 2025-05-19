@@ -170,20 +170,22 @@ const PetTakerForm: React.FC = () => {
           onChange={handleChange}
           className="w-full border border-gray-300 p-2 rounded-md text-sm"
         />
-        <textarea
-          name="availability"
-          placeholder="Availability (e.g., Weekends, Evenings)"
-          value={state.availability}
-          onChange={handleChange}
-          className="w-full border border-gray-300 p-2 rounded-md text-sm h-20"
-        />
-        <input
-          type="file"
-          name="image"
-          accept="image/*"
-          onChange={handleFileChange}
-          className="w-full border border-gray-300 p-2 rounded-md text-sm"
-        />
+
+        <div>
+          <label
+            htmlFor="image-upload"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Upload your image
+          </label>
+          <input
+            type="file"
+            name="image"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="w-full border border-gray-300 p-2 rounded-md text-sm"
+          />
+        </div>
 
         {!successMessage ? (
           <Button>Join as a Caretaker</Button>

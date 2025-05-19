@@ -28,7 +28,6 @@ type UserUpdateInput = {
 };
 
 // GET — Fetch user data
-// GET — Fetch user data
 export async function GET(
   _: Request,
   { params }: { params: { email: string } }
@@ -44,7 +43,6 @@ export async function GET(
   return NextResponse.json({ user });
 }
 
-// PUT — Update user data
 // PUT — Update user data
 export async function PUT(
   request: Request,
@@ -67,7 +65,7 @@ export async function PUT(
 
   // Process text fields
   formData.forEach((value, key) => {
-    if (key === "availabilityFrom" || key === "availabilityUntil") {
+    if (key === "availabilityFrom" || key === "availabilityTo") {
       updates[key] = value ? { set: new Date(value as string) } : { set: null };
     } else if (key !== "image") {
       updates[key] = value as string;

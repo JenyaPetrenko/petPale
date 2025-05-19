@@ -1,5 +1,3 @@
-//ProfileContainer.tsx
-
 "use client";
 
 import { useSession } from "next-auth/react";
@@ -61,7 +59,16 @@ export default function ProfileContainer() {
       const formData = new FormData();
       Object.entries(formState).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
-          formData.append(key, value.toString());
+          // Перевіряємо, чи є у value дата, і якщо є, конвертуємо в строку
+          if (key === "availabilityFrom" || key === "availabilityTo") {
+            if (value) {
+              formData.append(key, new Date(value).toISOString());
+            } else {
+              formData.append(key, "");
+            }
+          } else {
+            formData.append(key, value.toString());
+          }
         }
       });
 
@@ -102,7 +109,7 @@ export default function ProfileContainer() {
             <ProfileField
               label="Name"
               name="name"
-              value={formState.name}
+              value={formState.name || ""}
               onChange={handleInputChange}
               editable={editMode}
             />
@@ -110,21 +117,21 @@ export default function ProfileContainer() {
             <ProfileField
               label="Role"
               name="role"
-              value={formState.role}
+              value={formState.role || ""}
               onChange={handleInputChange}
               editable={editMode}
             />
             <ProfileField
               label="Phone"
               name="phone"
-              value={formState.phone}
+              value={formState.phone || ""}
               onChange={handleInputChange}
               editable={editMode}
             />
             <ProfileField
               label="Location"
               name="location"
-              value={formState.location}
+              value={formState.location || ""}
               onChange={handleInputChange}
               editable={editMode}
             />
@@ -132,26 +139,30 @@ export default function ProfileContainer() {
               label="Availability From"
               name="availabilityFrom"
               value={
-                formState.availabilityFrom
+                formState.availabilityFrom &&
+                !isNaN(new Date(formState.availabilityFrom).getTime())
                   ? new Date(formState.availabilityFrom)
                       .toISOString()
                       .split("T")[0]
                   : ""
               }
               onChange={handleInputChange}
+              type="date"
               editable={editMode}
             />
             <ProfileField
               label="Availability Until"
-              name="availabilityUntil"
+              name="availabilityTo"
               value={
-                formState.availabilityTo
+                formState.availabilityTo &&
+                !isNaN(new Date(formState.availabilityTo).getTime())
                   ? new Date(formState.availabilityTo)
                       .toISOString()
                       .split("T")[0]
                   : ""
               }
               onChange={handleInputChange}
+              type="date"
               editable={editMode}
             />
             {/* Зображення профілю */}
@@ -197,61 +208,35 @@ export default function ProfileContainer() {
                 <ProfileField
                   label="Pet Type"
                   name="petType"
-                  value={formState.petType}
+                  value={formState.petType || ""}
                   onChange={handleInputChange}
                   editable={editMode}
                 />
                 <ProfileField
                   label="Pet Name"
                   name="petName"
-                  value={formState.petName}
+                  value={formState.petName || ""}
                   onChange={handleInputChange}
                   editable={editMode}
                 />
                 <ProfileField
                   label="Pet Age"
                   name="petAge"
-                  value={formState.petAge}
+                  value={formState.petAge || ""}
                   onChange={handleInputChange}
                   editable={editMode}
                 />
                 <ProfileField
                   label="Pet Gender"
                   name="petGender"
-                  value={formState.petGender}
+                  value={formState.petGender || ""}
                   onChange={handleInputChange}
                   editable={editMode}
                 />
                 <ProfileField
                   label="Pet Breed"
                   name="petBreed"
-                  value={formState.petBreed}
-                  onChange={handleInputChange}
-                  editable={editMode}
-                />
-                <ProfileField
-                  label="Availability From"
-                  name="availabilityFrom"
-                  value={
-                    formState.availabilityFrom
-                      ? new Date(formState.availabilityFrom)
-                          .toISOString()
-                          .split("T")[0]
-                      : ""
-                  }
-                  onChange={handleInputChange}
-                  editable={editMode}
-                />
-                <ProfileField
-                  label="Availability Until"
-                  name="availabilityUntil"
-                  value={
-                    formState.availabilityTo
-                      ? new Date(formState.availabilityTo)
-                          .toISOString()
-                          .split("T")[0]
-                      : ""
-                  }
+                  value={formState.petBreed || ""}
                   onChange={handleInputChange}
                   editable={editMode}
                 />
@@ -284,6 +269,7 @@ function ProfileField({
   onChange,
   editable = false,
   disabled = false,
+  type = "text",
 }: {
   label: string;
   value?: string | number | null;
@@ -293,16 +279,17 @@ function ProfileField({
   ) => void;
   editable?: boolean;
   disabled?: boolean;
+  type?: string; // Added 'type' to the props
 }) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 mb-2">
       <label className="font-semibold text-[#426a5a] w-32">{label}:</label>
       {editable && name ? (
         <input
-          type="text"
           name={name}
           value={value ?? ""}
           onChange={onChange}
+          type={type}
           disabled={disabled}
           className="border border-gray-300 rounded px-3 py-1 w-full sm:w-[300px] focus:outline-none focus:ring-2 focus:ring-[#426a5a]"
         />
