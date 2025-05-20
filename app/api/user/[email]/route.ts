@@ -1,4 +1,4 @@
-//app/api/auth/[email]]/route.ts
+//app/api/user/[email]/route.ts
 
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
@@ -66,7 +66,10 @@ export async function PUT(
   // Process text fields
   formData.forEach((value, key) => {
     if (key === "availabilityFrom" || key === "availabilityTo") {
-      updates[key] = value ? { set: new Date(value as string) } : { set: null };
+      const dateValue = new Date(value as string);
+      updates[key] = isNaN(dateValue.getTime())
+        ? { set: null }
+        : { set: dateValue };
     } else if (key !== "image") {
       updates[key] = value as string;
     }
@@ -101,6 +104,40 @@ export async function PUT(
     console.error("Update failed:", error);
     return NextResponse.json(
       { message: "Update failed", error },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE — Delete user
+export async function DELETE(
+  _: Request,
+  { params }: { params: { email: string } }
+) {
+  const email = params.email;
+
+  try {
+    const existingUser = await prisma.user.findUnique({
+      where: { email: email },
+    });
+
+    if (!existingUser) {
+      return NextResponse.json({ message: "User not found" }, { status: 404 });
+    }
+
+    // Видаляємо користувача
+    await prisma.user.delete({
+      where: { email: email },
+    });
+
+    return NextResponse.json(
+      { message: "User deleted successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Delete failed:", error);
+    return NextResponse.json(
+      { message: "Delete failed", error },
       { status: 500 }
     );
   }

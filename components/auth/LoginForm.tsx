@@ -53,7 +53,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
     });
 
     if (result?.error) {
-      setError("Login failed. Please check your credentials.");
+      setError("Login failed. Please check your email and password.");
     } else {
       onSuccess();
       window.location.reload();

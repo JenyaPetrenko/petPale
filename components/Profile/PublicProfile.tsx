@@ -1,6 +1,5 @@
 //components/Profile/PublicProfile.tsx - to be used in the dashboard page to view any user profile
 //components/Profile/PublicProfile.tsx - to be used in the dashboard page to view any user profile
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -18,6 +17,11 @@ interface User {
   image?: string;
   availabilityFrom?: string; // Поле для початку доступності
   availabilityTo?: string; // Поле для завершення доступності
+  petType?: string;
+  petName?: string;
+  petAge?: number;
+  petBreed?: string;
+  petGender?: string;
 }
 
 interface ProfileViewProps {
@@ -58,16 +62,22 @@ export default function PublicProfile({ userId }: ProfileViewProps) {
     <div className="min-h-screen flex flex-col">
       <main className="flex-1 flex items-start justify-center p-4 mt-36">
         <div className="w-full max-w-2xl">
-          {/*  "Back to List" */}
-          <div className="mb-4">
+          {/* Кнопки "Back to List" та "Send Message" */}
+          <div className="mb-4 flex justify-between">
             <Button onClick={() => router.push("/dashboard")}>
               Back to List
             </Button>
+            <Button onClick={() => router.push("/dashboard")}>
+              Send Message
+            </Button>
           </div>
+
+          {/* Заголовок профілю */}
           <h1 className="text-3xl font-bold text-[#426a5a] mb-6 border-b pb-2">
             {user.name}&#39;s Profile
           </h1>
 
+          {/* Контент профілю */}
           <div className="flex gap-6 items-start">
             {/* Ліва колонка з інформацією */}
             <div className="flex-1 space-y-4 text-gray-700">
@@ -103,6 +113,44 @@ export default function PublicProfile({ userId }: ProfileViewProps) {
                   ? new Date(user.availabilityTo).toLocaleDateString()
                   : "Not provided"}
               </p>
+              {user.petType && (
+                <p>
+                  <span className="font-semibold text-[#426a5a]">
+                    Pet Type:
+                  </span>{" "}
+                  {user.petType}
+                </p>
+              )}
+              {user.petName && (
+                <p>
+                  <span className="font-semibold text-[#426a5a]">
+                    Pet Name:
+                  </span>{" "}
+                  {user.petName}
+                </p>
+              )}
+              {user.petAge !== undefined && (
+                <p>
+                  <span className="font-semibold text-[#426a5a]">Pet Age:</span>{" "}
+                  {user.petAge} years
+                </p>
+              )}
+              {user.petBreed && (
+                <p>
+                  <span className="font-semibold text-[#426a5a]">
+                    Pet Breed:
+                  </span>{" "}
+                  {user.petBreed}
+                </p>
+              )}
+              {user.petGender && (
+                <p>
+                  <span className="font-semibold text-[#426a5a]">
+                    Pet Gender:
+                  </span>{" "}
+                  {user.petGender}
+                </p>
+              )}
             </div>
 
             {/* Права колонка з фото */}

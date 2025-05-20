@@ -8,6 +8,7 @@ interface ButtonProps {
   className?: string; // Додаткові класи
   href?: string; // Для навігації
   onClick?: () => void; // Для обробки кліка
+  variant?: "primary" | "danger" | "secondary";
 }
 
 const Button: React.FC<ButtonProps> = ({

@@ -36,3 +36,12 @@ export interface LoginForm {
   email: string;
   password: string;
 }
+
+export interface User {
+  id: string;
+  name: string;
+  role: string;
+  petType?: string;
+  location?: string;
+  image?: string;
+}
