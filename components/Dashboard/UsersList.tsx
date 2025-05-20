@@ -1,4 +1,4 @@
-//components/Dashboard/UsersList.tsx
+//components/Dashboard/UsersList.tsx - a list of users with filters
 
 "use client";
 
@@ -6,34 +6,36 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Button from "@/components/Button";
 import Image from "next/image";
-import { User } from "@/utils/forms"; // Імпортуємо інтерфейс User
+import { User } from "@/utils/forms"; // import interface User
 
 export default function UserList() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
-  const [roleFilter, setRoleFilter] = useState<string>("");
+  const [users, setUsers] = useState<User[]>([]); //save users list
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]); //save filtered users list
+  const [roleFilter, setRoleFilter] = useState<string>(""); // save role filter
   const [locationFilter, setLocationFilter] = useState<string>("");
-  const [petTypeFilter, setPetTypeFilter] = useState<string>(""); // Стан для фільтру за типом тварини
+  const [petTypeFilter, setPetTypeFilter] = useState<string>(""); //
 
+  // Fetch the data from the API when the component mounts.
   useEffect(() => {
-    fetch("/api/usersList")
-      .then((res) => res.json())
+    fetch("/api/usersList") // Fetches the users from the `/api/usersList` endpoint.
+      .then((res) => res.json()) // Parses the response as JSON.
       .then((data) => {
-        setUsers(data.users);
-        setFilteredUsers(data.users);
+        setUsers(data.users); // Sets the full list of users.
+        setFilteredUsers(data.users); // Initializes the filtered list as the full list.
       })
-      .catch((error) => console.error("Error fetching users:", error));
+      .catch((error) => console.error("Error fetching users:", error)); // Logs any errors that occur during the fetch.
   }, []);
 
-  // Фільтрація при зміні фільтрів
+  // changes after every change in filters
+  // Filter the user list whenever any of the filters or the user list changes.
   useEffect(() => {
     const filtered = users.filter((user) => {
-      const matchRole = roleFilter ? user.role === roleFilter : true;
+      const matchRole = roleFilter ? user.role === roleFilter : true; // Check if the user's role matches the selected role filter.
       const matchLocation = locationFilter
-        ? user.location?.toLowerCase().includes(locationFilter.toLowerCase())
+        ? user.location?.toLowerCase().includes(locationFilter.toLowerCase()) // Check if the user's location includes the search term.
         : true;
 
-      // Перевірка типу тварини
+      // check the type of pet
       const normalizedPetType = user.petType?.toLowerCase();
       const userPetType =
         normalizedPetType === "dog" ||
@@ -43,13 +45,14 @@ export default function UserList() {
           : "other";
 
       const matchPetType = petTypeFilter
-        ? userPetType === petTypeFilter.toLowerCase()
+        ? userPetType === petTypeFilter.toLowerCase() // Check if the user's pet type matches the selected pet type filter.
         : true;
 
+      // A user passes the filter if they match all the active filters.
       return matchRole && matchLocation && matchPetType;
     });
-    setFilteredUsers(filtered);
-  }, [roleFilter, locationFilter, petTypeFilter, users]);
+    setFilteredUsers(filtered); // Update the filtered user list with the results.
+  }, [roleFilter, locationFilter, petTypeFilter, users]); // Re-run the filter whenever the filters or the user list changes.
 
   if (users.length === 0) {
     return <p>Loading users...</p>;
@@ -76,7 +79,7 @@ export default function UserList() {
           type="text"
           placeholder="Filter by location"
           value={locationFilter}
-          onChange={(e) => setLocationFilter(e.target.value)} // Оновлення фільтра локації
+          onChange={(e) => setLocationFilter(e.target.value)} // update location filter
           className="border border-gray-300 rounded px-4 py-2"
         />
 
@@ -102,7 +105,6 @@ export default function UserList() {
               key={user.id}
               className="bg-white shadow-md rounded-lg p-6 border border-gray-200 hover:shadow-lg transition-shadow flex items-center"
             >
-              {/* Ліва колонка з текстовою інформацією */}
               <div className="flex-1">
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
                   {user.name}
@@ -123,7 +125,6 @@ export default function UserList() {
                 </Link>
               </div>
 
-              {/* Права колонка з фото */}
               <div className="ml-4">
                 {user.image ? (
                   <Image

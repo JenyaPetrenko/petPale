@@ -1,17 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import Footer from "@/components/Footer";
-
-import Navbar from "@/components/Navbar";
 
 export default function Contact() {
   return (
     <div className="kontakt">
-      <header>
-        <Navbar></Navbar>
-      </header>
-
       <div className="wrapper">
         <div className="images">
           <div className="display-none-mobile">
@@ -80,8 +73,6 @@ export default function Contact() {
           <button>Submit</button>
         </div>
       </div>
-
-      <Footer></Footer>
     </div>
   );
 }

@@ -1,3 +1,5 @@
+//components/auth/LoginForm.tsx - a form for login
+
 "use client";
 
 import { signIn } from "next-auth/react";
@@ -7,16 +9,17 @@ import Button from "../Button";
 import { LoginForm as LoginFormType } from "@/utils/forms";
 
 type LoginFormProps = {
-  onSuccess: () => void;
+  onSuccess: () => void; // Callback function triggered upon successful login
 };
 
 type RoleOption = {
-  value: string;
-  label: string;
+  value: string; // Value of the checkbox option (e.g., "newsletter")
+  label: string; // Label displayed next to the checkbox
 };
 
 export default function LoginForm({ onSuccess }: LoginFormProps) {
   const [formData, setFormData] = useState<LoginFormType>({
+    //store form data
     email: "",
     password: "",
   });
@@ -32,7 +35,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: value, //to update the corresponding field in the form data
     }));
   };
 

@@ -5,26 +5,27 @@
 import { useEffect, useReducer, useState } from "react";
 import { signIn, signOut, useSession, getSession } from "next-auth/react";
 import { User } from "@prisma/client";
-import Navbar from "../Navbar";
-import Footer from "../Footer";
+
 import ProfileField from "./ProfileField";
 import Button from "../Button";
 import Image from "next/image";
 
-// Описуємо типи для дій у редюсері
+// Type definitions for the reducer actions
 type FormAction =
   | {
-      type: "UPDATE_FIELD";
-      payload: { name: keyof User; value: string | number | Date | null };
+      type: "UPDATE_FIELD"; // Action for updating a specific field in the form.
+      payload: { name: keyof User; value: string | number | Date | null }; // Contains the field name and new value.
     }
-  | { type: "RESET"; payload: Partial<User> };
+  | { type: "RESET"; payload: Partial<User> }; // Action to reset the form to its initial state.
 
-// Reducer для управління станом форми
+// Reducer function for managing form state
 function formReducer(state: Partial<User>, action: FormAction): Partial<User> {
   switch (action.type) {
     case "UPDATE_FIELD":
+      // Updates a single field in the form state
       return { ...state, [action.payload.name]: action.payload.value };
     case "RESET":
+      // Resets the form state to the provided initial data
       return action.payload;
     default:
       return state;
@@ -32,40 +33,41 @@ function formReducer(state: Partial<User>, action: FormAction): Partial<User> {
 }
 
 export default function ProfileContainer() {
-  const { data: session, status } = useSession();
-  const [user, setUser] = useState<User | null>(null);
-  const [editMode, setEditMode] = useState(false);
-  const [email, setEmail] = useState<string | null>(null);
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  // Hooks to manage session and user data
+  const { data: session, status } = useSession(); // Access the current session and authentication status.
+  const [user, setUser] = useState<User | null>(null); // Stores the currently logged-in user's data.
+  const [editMode, setEditMode] = useState(false); // Tracks whether the form is in edit mode.
+  const [email, setEmail] = useState<string | null>(null); // Stores the user's email.
+  const [imageFile, setImageFile] = useState<File | null>(null); // Stores the selected image file.
 
-  // Використовуємо useReducer для управління станом форми
-  const [formState, dispatch] = useReducer(formReducer, {});
-  const [initialUserData, setInitialUserData] = useState<User | null>(null); // Початкові дані користувача
+  // Reducer for managing form state
+  const [formState, dispatch] = useReducer(formReducer, {}); // Form state managed with a reducer.
+  const [initialUserData, setInitialUserData] = useState<User | null>(null); // Stores the user's initial data for resetting purposes.
 
-  // Завантаження даних користувача після логіну
+  // Fetch user data after login
   useEffect(() => {
     const fetchUserData = async () => {
       if (session?.user?.email) {
         const userEmail = session.user.email;
-        setEmail(userEmail);
+        setEmail(userEmail); // Store the user's email.
 
         try {
-          const res = await fetch(`/api/user/${userEmail}`);
+          const res = await fetch(`/api/user/${userEmail}`); // Fetch the user's data from the API.
           const data = await res.json();
 
-          setUser(data.user);
-          dispatch({ type: "RESET", payload: data.user }); // Оновлюємо стан форми
-          setInitialUserData(data.user); // Зберігаємо початковий стан
+          setUser(data.user); // Update the user state with the fetched data.
+          dispatch({ type: "RESET", payload: data.user }); // Reset the form state with the fetched user data.
+          setInitialUserData(data.user); // Store the user's initial data.
 
-          // Оновлюємо сесію вручну
+          // Update the session manually with the fetched data
           const updatedSession = await getSession();
           if (updatedSession) {
             if (updatedSession?.user) {
-              updatedSession.user.name = data.user.name; // Оновлюємо локальні дані сесії
+              updatedSession.user.name = data.user.name; // Update the session with the user's name.
             }
           }
         } catch (error) {
-          console.error("Error fetching user data:", error);
+          console.error("Error fetching user data:", error); // Handle errors during data fetch.
         }
       }
     };
@@ -73,40 +75,50 @@ export default function ProfileContainer() {
     fetchUserData();
   }, [session?.user?.email]);
 
+  // Show a loading message while the user data is being fetched
   if (status === "loading" || !user) {
     return <p className="p-4">Loading...</p>;
   }
 
+  // Show a message if the user is not logged in
   if (!session) {
     return <p className="p-4">You must be logged in to view this page.</p>;
   }
 
+  // Handles input changes in the form
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
+
+    // Convert to number if type is "number"
+    const parsedValue = type === "number" ? Number(value) : value;
+
     dispatch({
       type: "UPDATE_FIELD",
-      payload: { name: name as keyof User, value },
+      payload: { name: name as keyof User, value: parsedValue },
     });
   };
 
+  // Handles file input changes for the profile picture
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) {
-      setImageFile(e.target.files[0]);
+      setImageFile(e.target.files[0]); // Stores the selected image file.
     }
   };
 
+  // Handles saving the updated user data
   const handleSave = async () => {
     if (!email) return;
 
     try {
       const formData = new FormData();
 
-      // Формуємо FormData з formState
+      // Add form state fields to FormData
       Object.entries(formState).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
           if (key === "availabilityFrom" || key === "availabilityTo") {
+            // Handle date fields
             formData.append(
               key,
               value instanceof Date ? value.toISOString() : value
@@ -117,12 +129,13 @@ export default function ProfileContainer() {
         }
       });
 
+      // Add the profile picture to FormData
       if (imageFile) {
         formData.append("image", imageFile);
       }
 
       const res = await fetch(`/api/user/${encodeURIComponent(email)}`, {
-        method: "PUT",
+        method: "PUT", // Updates the user's data via a PUT request.
         body: formData,
       });
 
@@ -131,12 +144,12 @@ export default function ProfileContainer() {
       }
 
       const updated = await res.json();
-      setUser(updated.user);
-      dispatch({ type: "RESET", payload: updated.user });
-      setImageFile(null);
-      setEditMode(false);
+      setUser(updated.user); // Update the user state with the saved data.
+      dispatch({ type: "RESET", payload: updated.user }); // Reset the form state with the saved data.
+      setImageFile(null); // Clear the uploaded image file.
+      setEditMode(false); // Exit edit mode.
 
-      // Оновлюємо сесію після успішного редагування
+      // Update the session after saving changes
       const updatedSession = await signIn("credentials", {
         redirect: false,
         email: updated.user.email,
@@ -146,53 +159,50 @@ export default function ProfileContainer() {
         console.error("Failed to update session after profile update.");
       }
     } catch (error) {
-      console.error("Error saving user data:", error);
+      console.error("Error saving user data:", error); // Handle errors during save.
     }
   };
 
+  // Handles canceling edits
   const handleCancel = () => {
-    setEditMode(false);
-    dispatch({ type: "RESET", payload: initialUserData || {} }); // Відновлюємо початкові дані
-    setImageFile(null); // Якщо потрібно, очищаємо фото
+    setEditMode(false); // Exit edit mode.
+    dispatch({ type: "RESET", payload: initialUserData || {} }); // Revert form state to initial data.
+    setImageFile(null); // Clear the uploaded image file.
   };
 
+  // Handles deleting the user's account
   const handleDeleteAccount = async () => {
     if (!email) return;
 
-    // Попереджувальне повідомлення для підтвердження
     const confirmation = confirm(
       "Are you sure you want to delete your account? This action cannot be undone."
-    );
+    ); // Confirm the action with the user.
     if (!confirmation) return;
 
     try {
       const res = await fetch(`/api/user/${encodeURIComponent(email)}`, {
-        method: "DELETE",
+        method: "DELETE", // Deletes the user's account via a DELETE request.
       });
 
       if (!res.ok) {
         throw new Error(`Failed to delete account: ${res.statusText}`);
       }
 
-      // Виходимо з облікового запису та перенаправляємо на початкову сторінку
-      await signOut({ callbackUrl: "/" });
+      await signOut({ callbackUrl: "/" }); // Log out the user and redirect to the homepage.
     } catch (error) {
-      console.error("Error deleting account:", error);
+      console.error("Error deleting account:", error); // Handle errors during deletion.
       alert("An error occurred while deleting your account. Please try again.");
     }
   };
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
       <main className="flex-1 flex items-start justify-center p-4 mt-36">
         <div className="w-full max-w-2xl">
           <h1 className="text-3xl font-bold text-[#426a5a] mb-6 border-b pb-2">
             My Profile
           </h1>
 
-          {/* Контейнер для інформації та фото */}
           <div className="flex flex-col md:flex-row gap-6">
-            {/* Ліва колонка з інформацією */}
             <div className="flex-1 space-y-4 text-gray-700">
               <ProfileField
                 label="Name"
@@ -255,7 +265,6 @@ export default function ProfileContainer() {
               )}
             </div>
 
-            {/* Права колонка з фото */}
             <div>
               {!editMode && user.image && (
                 <div className="mt-4">
@@ -299,7 +308,7 @@ export default function ProfileContainer() {
                 <ProfileField
                   label="Pet Age"
                   name="petAge"
-                  value={formState.petAge || ""}
+                  value={formState.petAge || 0}
                   onChange={handleInputChange}
                   editable={editMode}
                   type="number"
@@ -339,7 +348,6 @@ export default function ProfileContainer() {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }

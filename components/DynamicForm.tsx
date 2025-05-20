@@ -1,21 +1,25 @@
 //components/DynamicForm.tsx
 
+// Importing required React hooks and components
 import React, { useReducer, useState } from "react";
 import Button from "@/components/Button";
 
+// Define the structure of each form field
 interface FormField {
-  label: string;
-  name: string;
-  type: "text" | "email" | "tel" | "number" | "textarea" | "file" | "select";
-  options?: string[];
-  placeholder?: string;
+  label: string; // Display label for the field
+  name: string; // Unique name for the field
+  type: "text" | "email" | "tel" | "number" | "textarea" | "file" | "select"; // Input type
+  options?: string[]; // Options for 'select' input type (if applicable)
+  placeholder?: string; // Placeholder text for the input
 }
 
+// Define the structure of the form configuration
 interface FormConfig {
-  title: string;
-  fields: FormField[];
+  title: string; // Title of the form
+  fields: FormField[]; // Array of fields in the form
 }
 
+// Configuration for dynamic forms based on the type ('owner' or 'caretaker')
 const formConfigs: Record<string, FormConfig> = {
   owner: {
     title: "Join as Pet Owner",
@@ -51,7 +55,7 @@ const formConfigs: Record<string, FormConfig> = {
         label: "Pet Gender",
         name: "petGender",
         type: "select",
-        options: ["Male", "Female"],
+        options: ["Male", "Female"], // Dropdown options
       },
       { label: "Pet Image", name: "image", type: "file" },
       {
@@ -91,28 +95,33 @@ const formConfigs: Record<string, FormConfig> = {
   },
 };
 
+// Define the state and actions for the `useReducer` hook
 type State = Record<string, string | number | File | null>;
 
 type Action =
-  | { type: "updateField"; field: string; value: string | number | File }
-  | { type: "reset" };
+  | { type: "updateField"; field: string; value: string | number | File } // Update a specific field
+  | { type: "reset" }; // Reset the form state
 
+// Main DynamicForm component
 const DynamicForm: React.FC<{ formType: "owner" | "caretaker" }> = ({
   formType,
 }) => {
-  const formConfig = formConfigs[formType];
+  const formConfig = formConfigs[formType]; // Get the form configuration for the given form type
+
+  // Initialize form state based on the fields in the configuration
   const initialState = formConfig.fields.reduce((acc, field) => {
-    acc[field.name] = field.type === "file" ? null : "";
+    acc[field.name] = field.type === "file" ? null : ""; // File inputs start with null, others with empty strings
     return acc;
   }, {} as State);
 
+  // Reducer function to manage form state
   const [state, dispatch] = useReducer(
     (state: State, action: Action): State => {
       switch (action.type) {
         case "updateField":
-          return { ...state, [action.field]: action.value };
+          return { ...state, [action.field]: action.value }; // Update the specific field
         case "reset":
-          return initialState;
+          return initialState; // Reset the form state
         default:
           return state;
       }
@@ -120,8 +129,9 @@ const DynamicForm: React.FC<{ formType: "owner" | "caretaker" }> = ({
     initialState
   );
 
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null); // Manage success message
 
+  // Handle changes for text, email, number, textarea, and select inputs
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -131,36 +141,38 @@ const DynamicForm: React.FC<{ formType: "owner" | "caretaker" }> = ({
     dispatch({ type: "updateField", field: name, value });
   };
 
+  // Handle file input changes
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       dispatch({
         type: "updateField",
         field: e.target.name,
-        value: e.target.files[0],
+        value: e.target.files[0], // Store the file object
       });
     }
   };
 
+  // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Перевірка обов'язкових полів перед відправкою
+    // Validate required fields
     const requiredFields = formConfig.fields.filter((field) =>
       ["name", "email", "password", "location"].includes(field.name)
     );
 
     for (const field of requiredFields) {
       if (!state[field.name]) {
-        alert(`Field ${field.label} is required`);
+        alert(`Field ${field.label} is required`); // Alert for missing required fields
         return;
       }
     }
 
-    console.log(`${formConfig.title} Data:`, state);
+    console.log(`${formConfig.title} Data:`, state); // Log the form data
     setSuccessMessage(
-      `You are registered as ${formConfig.title.split(" ")[2]}!`
+      `You are registered as ${formConfig.title.split(" ")[2]}!` // Display success message
     );
-    dispatch({ type: "reset" });
+    dispatch({ type: "reset" }); // Reset the form
   };
 
   return (

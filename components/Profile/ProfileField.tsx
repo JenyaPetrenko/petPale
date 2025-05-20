@@ -1,4 +1,4 @@
-//componnet/Profile/ProfileField.tsx
+//componnet/Profile/ProfileField.tsx - This file defines a ProfileField component that displays a label and a value, with an optional input field for editing the value. It handles different types of values, including strings, numbers, and dates.
 
 import React from "react";
 
@@ -21,16 +21,23 @@ function ProfileField({
   disabled?: boolean;
   type?: string;
 }) {
-  let displayValue = "";
+  let displayValue: string | number = ""; // Allow both string and number types for displayValue.
+
+  // Handle Date formatting only if type is not "number"
+  if (type !== "number" && value instanceof Date && !isNaN(value.getTime())) {
+    displayValue = value.toISOString().split("T")[0];
+  }
 
   if (value instanceof Date && !isNaN(value.getTime())) {
     displayValue = value.toISOString().split("T")[0];
+  } else if (type === "number" && typeof value === "number") {
+    displayValue = value; // Keep numeric value as-is for number inputs.
   } else if (typeof value === "string" || typeof value === "number") {
     const parsedDate = new Date(value);
     if (!isNaN(parsedDate.getTime())) {
       displayValue = parsedDate.toISOString().split("T")[0];
     } else {
-      displayValue = value.toString();
+      displayValue = value.toString(); // Convert to string for other types.
     }
   }
 
@@ -40,7 +47,7 @@ function ProfileField({
       {editable && name ? (
         <input
           name={name}
-          value={displayValue}
+          value={displayValue} // Pass numeric value directly if type="number".
           onChange={onChange}
           type={type}
           disabled={disabled}

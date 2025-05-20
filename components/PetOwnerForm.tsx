@@ -1,3 +1,5 @@
+//components/PetOwnerForm.tsx - registering for pet owners
+
 "use client";
 
 import React, { useReducer, useState } from "react";
@@ -19,6 +21,7 @@ interface State {
   imageFile: File | null;
 }
 
+//action type for the form reducer
 type Action =
   | {
       type: "updateField";
@@ -42,92 +45,108 @@ const initialState: State = {
   imageFile: null,
 };
 
+//reducer function to handle form state updates
+// Reducer function to manage form state updates
 function formReducer(state: State, action: Action): State {
   switch (action.type) {
     case "updateField":
-      return { ...state, [action.field]: action.value };
+      return { ...state, [action.field]: action.value }; // Update the specified field.
     case "reset":
-      return initialState;
+      return initialState; // Reset the form to its initial state.
     default:
-      return state;
+      return state; // Return the current state if no matching action is found.
   }
 }
 
-const PetOwnerForm: React.FC = () => {
-  const [state, dispatch] = useReducer(formReducer, initialState);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const router = useRouter();
+//// **Functional Component** ////
 
+// Main form component
+const PetOwnerForm: React.FC = () => {
+  const [state, dispatch] = useReducer(formReducer, initialState); // State management using useReducer.
+  const [successMessage, setSuccessMessage] = useState<string | null>(null); // State for handling success or error messages.
+  const router = useRouter(); // Next.js router instance for navigation.
+
+  //// **Event Handlers** ////
+
+  // Handle input field changes
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
     dispatch({
-      type: "updateField",
-      field: e.target.name as keyof State,
-      value: e.target.value,
+      type: "updateField", // Dispatch an action to update the field.
+      field: e.target.name as keyof State, // Update the field by its name.
+      value: e.target.value, // Set the new value.
     });
   };
 
+  // Handle file input changes (for profile picture)
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) {
       dispatch({
-        type: "updateField",
+        type: "updateField", // Dispatch an action to update the file field.
         field: "imageFile",
-        value: e.target.files[0],
+        value: e.target.files[0], // Set the selected file.
       });
     }
   };
 
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent the default form submission behavior.
 
+    // Validate the password length
     if (state.password.length < 6) {
-      setSuccessMessage("Password must be at least 6 characters");
+      setSuccessMessage("Password must be at least 6 characters"); // Error message for invalid password.
       return;
     }
 
+    // Prepare form data for submission
     const formData = new FormData();
     formData.append("name", state.name);
     formData.append("email", state.email);
     formData.append("password", state.password);
-    formData.append("role", "owner");
+    formData.append("role", "owner"); // Hardcoded role as "owner".
     formData.append("location", state.location);
     formData.append("phone", state.phone);
     formData.append("petType", state.petType);
     formData.append("petName", state.petName);
-    formData.append("petAge", String(state.petAge));
+    formData.append("petAge", String(state.petAge)); // Convert petAge to string.
     formData.append("petBreed", state.petBreed);
     formData.append("petGender", state.petGender);
     formData.append("availability", state.availability);
     if (state.imageFile) {
-      formData.append("image", state.imageFile);
+      formData.append("image", state.imageFile); // Include the profile picture if provided.
     }
 
     try {
+      // Send a POST request to the server
       const res = await fetch("/api/auth/register", {
         method: "POST",
         body: formData,
       });
 
-      const data = await res.json();
+      const data = await res.json(); // Parse the response JSON.
 
       if (!res.ok) {
-        console.error("❌ Register error:", data.message);
-        setSuccessMessage(data.message || "Registration failed.");
+        console.error(" Register error:", data.message); // Log the error.
+        setSuccessMessage(data.message || "Registration failed."); // Display the error message.
         return;
       }
 
+      // Success: Show success message and reset the form
       setSuccessMessage("You are registered as Pet Owner!");
       setTimeout(() => {
-        dispatch({ type: "reset" });
+        dispatch({ type: "reset" }); // Reset the form after successful submission.
       }, 1000);
     } catch (error) {
-      console.error(error);
-      setSuccessMessage("Something went wrong!");
+      console.error(error); // Log any errors during the fetch.
+      setSuccessMessage("Something went wrong!"); // Display a generic error message.
     }
   };
+
+  //// **Rendering** ////
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4">

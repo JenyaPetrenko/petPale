@@ -8,7 +8,6 @@ import Modal from "@/components/Modal";
 import PetOwnerForm from "@/components/PetOwnerForm";
 import PetTakerForm from "@/components/PetTakerForm";
 import Button from "@/components/Button";
-import Footer from "@/components/Footer";
 
 export default function Products() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -87,7 +86,6 @@ export default function Products() {
         </section>
       </main>
 
-      <Footer></Footer>
       {/* Modal for forms */}
       <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
         {activeForm === "owner" && <PetOwnerForm />}

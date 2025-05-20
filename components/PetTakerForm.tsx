@@ -6,7 +6,6 @@ import React, { useReducer, useState } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/components/Button";
 
-// Типи для стану форми
 interface State {
   name: string;
   email: string;
@@ -18,12 +17,12 @@ interface State {
   imageFile: File | null;
 }
 
-// Дії редʼюсера
+// Action types for the reducer
 type Action =
-  | { type: "updateField"; field: keyof State; value: string | File | null }
-  | { type: "reset" };
+  | { type: "updateField"; field: keyof State; value: string | File | null } // Action to update a specific field in the form state
+  | { type: "reset" }; // Action to reset the form to its initial state
 
-// Початковий стан
+// Initial state for the form
 const initialState: State = {
   name: "",
   email: "",
@@ -35,82 +34,96 @@ const initialState: State = {
   imageFile: null,
 };
 
-// Редʼюсер
+// Reducer function to manage form state updates
 function formReducer(state: State, action: Action): State {
   switch (action.type) {
     case "updateField":
+      // Update a specific field in the form state
       return { ...state, [action.field]: action.value };
     case "reset":
+      // Reset the form state to the initial state
       return initialState;
     default:
-      return state;
+      return state; // Return the current state if no matching action is found
   }
 }
 
-const PetTakerForm: React.FC = () => {
-  const [state, dispatch] = useReducer(formReducer, initialState);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const router = useRouter();
+//// **Functional Component** ////
 
+// Main form component for registering as a caretaker
+const PetTakerForm: React.FC = () => {
+  const [state, dispatch] = useReducer(formReducer, initialState); // Manage form state using a reducer
+  const [successMessage, setSuccessMessage] = useState<string | null>(null); // State for handling success or error messages
+  const router = useRouter(); // Next.js router instance for navigation
+
+  //// **Event Handlers** ////
+
+  // Handle text input changes
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     dispatch({
-      type: "updateField",
-      field: e.target.name as keyof State,
-      value: e.target.value,
+      type: "updateField", // Dispatch an action to update a field
+      field: e.target.name as keyof State, // Identify the field by its name attribute
+      value: e.target.value, // Use the input's value as the new field value
     });
   };
 
+  // Handle file input changes (for profile picture)
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) {
       const file = e.target.files[0];
-      dispatch({ type: "updateField", field: "imageFile", value: file });
+      dispatch({ type: "updateField", field: "imageFile", value: file }); // Store the file in the state
       dispatch({
         type: "updateField",
         field: "image",
-        value: URL.createObjectURL(file),
+        value: URL.createObjectURL(file), // Create a preview URL for the image
       });
     }
   };
 
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent the default form submission behavior
 
+    // Prepare form data for submission
     const formData = new FormData();
     formData.append("name", state.name);
     formData.append("email", state.email);
     formData.append("password", state.password);
-    formData.append("role", "caretaker");
+    formData.append("role", "caretaker"); // Hardcoded role as "caretaker"
     formData.append("location", state.location);
     formData.append("availability", state.availability);
     formData.append("phone", state.phone);
     if (state.imageFile) {
-      formData.append("image", state.imageFile);
+      formData.append("image", state.imageFile); // Include the uploaded image file
     }
 
     try {
+      // Send a POST request to register the caretaker
       const res = await fetch("/api/auth/register", {
         method: "POST",
-        body: formData,
+        body: formData, // Send form data as the request body
       });
 
-      const data = await res.json(); // Отримаємо і message, і error
+      const data = await res.json(); // Parse the server's response
 
       if (!res.ok) {
-        console.error("❌ Register error:", data.message, data.error); // ВИВОДИМО ВСЕ
-        setSuccessMessage(data.message || "Error occurred");
+        console.error("❌Register error:", data.message, data.error); // Log errors if the response is not OK
+        setSuccessMessage(data.message || "Error occurred"); // Display an error message
         return;
       }
 
+      // Success: Display a success message and reset the form
       setSuccessMessage("You are registered as Pet CareTaker!");
-      setTimeout(() => dispatch({ type: "reset" }), 500);
+      setTimeout(() => dispatch({ type: "reset" }), 500); // Reset the form after a short delay
     } catch (err) {
-      console.error("❌ Unexpected error:", err);
-      setSuccessMessage("Something went wrong!");
+      console.error("❌ Unexpected error:", err); // Log unexpected errors
+      setSuccessMessage("Something went wrong!"); // Display a generic error message
     }
   };
 
+  //// **Rendering** ////
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 p-4 mt-20">
       <form

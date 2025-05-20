@@ -1,5 +1,5 @@
 //components/Profile/PublicProfile.tsx - to be used in the dashboard page to view any user profile
-//components/Profile/PublicProfile.tsx - to be used in the dashboard page to view any user profile
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -15,8 +15,8 @@ interface User {
   role: string;
   location?: string;
   image?: string;
-  availabilityFrom?: string; // Поле для початку доступності
-  availabilityTo?: string; // Поле для завершення доступності
+  availabilityFrom?: string;
+  availabilityTo?: string;
   petType?: string;
   petName?: string;
   petAge?: number;
@@ -29,10 +29,11 @@ interface ProfileViewProps {
 }
 
 export default function PublicProfile({ userId }: ProfileViewProps) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(null); //to store user data
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
+  // Fetches user data when the component mounts or the userId changes.
   useEffect(() => {
     async function loadUser() {
       try {
@@ -48,7 +49,7 @@ export default function PublicProfile({ userId }: ProfileViewProps) {
     }
 
     loadUser();
-  }, [userId]);
+  }, [userId]); //dependency array to trigger useEffect when userId changes
 
   if (error) {
     return <p className="text-red-500 text-center mt-4">{error}</p>;
@@ -62,7 +63,6 @@ export default function PublicProfile({ userId }: ProfileViewProps) {
     <div className="min-h-screen flex flex-col">
       <main className="flex-1 flex items-start justify-center p-4 mt-36">
         <div className="w-full max-w-2xl">
-          {/* Кнопки "Back to List" та "Send Message" */}
           <div className="mb-4 flex justify-between">
             <Button onClick={() => router.push("/dashboard")}>
               Back to List
@@ -72,14 +72,11 @@ export default function PublicProfile({ userId }: ProfileViewProps) {
             </Button>
           </div>
 
-          {/* Заголовок профілю */}
           <h1 className="text-3xl font-bold text-[#426a5a] mb-6 border-b pb-2">
             {user.name}&#39;s Profile
           </h1>
 
-          {/* Контент профілю */}
           <div className="flex gap-6 items-start">
-            {/* Ліва колонка з інформацією */}
             <div className="flex-1 space-y-4 text-gray-700">
               <p>
                 <span className="font-semibold text-[#426a5a]">Name:</span>{" "}
@@ -113,7 +110,8 @@ export default function PublicProfile({ userId }: ProfileViewProps) {
                   ? new Date(user.availabilityTo).toLocaleDateString()
                   : "Not provided"}
               </p>
-              {user.petType && (
+
+              {user.role === "owner" && user.petType && (
                 <p>
                   <span className="font-semibold text-[#426a5a]">
                     Pet Type:
@@ -121,7 +119,7 @@ export default function PublicProfile({ userId }: ProfileViewProps) {
                   {user.petType}
                 </p>
               )}
-              {user.petName && (
+              {user.role === "owner" && user.petName && (
                 <p>
                   <span className="font-semibold text-[#426a5a]">
                     Pet Name:
@@ -129,13 +127,13 @@ export default function PublicProfile({ userId }: ProfileViewProps) {
                   {user.petName}
                 </p>
               )}
-              {user.petAge !== undefined && (
+              {user.role === "owner" && user.petAge !== undefined && (
                 <p>
                   <span className="font-semibold text-[#426a5a]">Pet Age:</span>{" "}
                   {user.petAge} years
                 </p>
               )}
-              {user.petBreed && (
+              {user.role === "owner" && user.petBreed && (
                 <p>
                   <span className="font-semibold text-[#426a5a]">
                     Pet Breed:
@@ -143,7 +141,7 @@ export default function PublicProfile({ userId }: ProfileViewProps) {
                   {user.petBreed}
                 </p>
               )}
-              {user.petGender && (
+              {user.role === "owner" && user.petGender && (
                 <p>
                   <span className="font-semibold text-[#426a5a]">
                     Pet Gender:

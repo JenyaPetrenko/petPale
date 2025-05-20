@@ -9,8 +9,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 import { Providers } from "./providers"; //
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+
 import Modal from "@/components/Modal";
 import LoginForm from "@/components/auth/LoginForm";
 import Button from "@/components/Button";
@@ -50,9 +49,6 @@ export default function Home() {
     <Providers>
       {/* access to global context */}
       <div className="index">
-        <header>
-          <Navbar />
-        </header>
         <div className="wrapper">
           <main className="text-center ">
             <div className="mb-4">
@@ -79,8 +75,6 @@ export default function Home() {
         <Modal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)}>
           <LoginForm onSuccess={() => setIsLoginOpen(false)} />
         </Modal>
-
-        <Footer />
       </div>
     </Providers>
   );
